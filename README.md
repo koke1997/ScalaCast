@@ -991,8 +991,6 @@ The project is now ready for release as a site for testing webcam functionality.
                     .then(function(stream) {
                         videoElement.srcObject = stream;
                         videoElement.play();
-                        selectedCameraVideo.srcObject = stream;
-                        selectedCameraVideo.play();
                     })
                     .catch(function(error) {
                         console.error("Error accessing camera for Port 1: ", error);
@@ -1007,8 +1005,6 @@ The project is now ready for release as a site for testing webcam functionality.
                     .then(function(stream) {
                         videoElement.srcObject = stream;
                         videoElement.play();
-                        selectedCameraVideo.srcObject = stream;
-                        selectedCameraVideo.play();
                     })
                     .catch(function(error) {
                         console.error("Error accessing camera for Port 2: ", error);
