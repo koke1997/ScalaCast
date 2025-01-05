@@ -7,19 +7,19 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         openjdk-11-jdk-headless \
         curl \
-        gnupg \
-    && echo "deb https://repo.scala-sbt.org/scalasbt/debian all main" | tee /etc/apt/sources.list.d/sbt.list \
-    && curl -sL "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x2EE0EA64E40A89B84B2DF73499E82A75642AC823" | gpg --dearmor > /etc/apt/trusted.gpg.d/sbt.gpg \
-    && apt-get update \
-    && apt-get install -y sbt \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+        gnupg && \
+    echo "deb https://repo.scala-sbt.org/scalasbt/debian all main" | tee /etc/apt/sources.list.d/sbt.list && \
+    curl -sL "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x2EE0EA64E40A89B84B2DF73499E82A75642AC823" | gpg --dearmor > /etc/apt/trusted.gpg.d/sbt.gpg && \
+    apt-get update && \
+    apt-get install -y sbt && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 # Setup SBT
 RUN mkdir -p project && \
     echo 'sbt.version=1.8.2' > project/build.properties && \
     echo 'addSbtPlugin("com.github.sbt" % "sbt-native-packager" % "1.9.16")\naddSbtPlugin("com.eed3si9n" % "sbt-assembly" % "2.1.1")' > project/plugins.sbt && \
-    echo 'name := "erlangcast"\nversion := "0.1.0"\nscalaVersion := "2.13.8"' > build.sbt
+    echo 'name := "scalacast"\nversion := "0.1.0"\nscalaVersion := "2.13.8"' > build.sbt
 
 COPY src/scala ./src/scala/
 RUN sbt compile
@@ -30,7 +30,7 @@ WORKDIR /app
 
 ENV NODE_NAME_1=node1@127.0.0.1 \
     NODE_NAME_2=node2@127.0.0.1 \
-    COOKIE=erlangcast_cookie \
+    COOKIE=scalacast_cookie \
     DEBIAN_FRONTEND=noninteractive
 
 # Install runtime dependencies
@@ -38,8 +38,8 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         openjdk-11-jre-headless \
         netcat-openbsd \
-        curl \
-    && apt-get clean && \
+        curl && \
+    apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
 # Setup directories

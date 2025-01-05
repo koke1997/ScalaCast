@@ -28,9 +28,14 @@ object PeerDiscovery {
   }
 
   def handleMessage(message: String): Future[Unit] = Future {
-    println(s"Received peer discovery message: $message")
-    // Handle incoming peer discovery message
-    peers += message
+    try {
+      println(s"Received peer discovery message: $message")
+      // Handle incoming peer discovery message
+      peers += message
+    } catch {
+      case e: Exception =>
+        println(s"Error handling peer discovery message: ${e.getMessage}")
+    }
   }
 
   def broadcastMessage(message: String): Future[Unit] = Future {

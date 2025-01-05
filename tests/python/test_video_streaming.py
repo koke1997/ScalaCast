@@ -1,6 +1,6 @@
 import unittest
 import os
-from video_streaming import start_hls_streaming, start_dash_streaming, get_hls_playlist, get_dash_manifest
+from src.scala.main.scala.video_streaming import start_hls_streaming, start_dash_streaming, get_hls_playlist, get_dash_manifest
 
 class TestVideoStreaming(unittest.TestCase):
 

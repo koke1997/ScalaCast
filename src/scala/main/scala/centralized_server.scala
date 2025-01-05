@@ -13,13 +13,19 @@ object CentralizedServer {
     if (isRunning) {
       restartServer(port)
     } else {
-      serverSocket = Some(new ServerSocket(port))
-      isRunning = true
-      println(s"Centralized server started on port $port")
+      try {
+        serverSocket = Some(new ServerSocket(port))
+        isRunning = true
+        println(s"Centralized server started on port $port")
 
-      while (isRunning) {
-        val clientSocket = serverSocket.get.accept()
-        handleClientRequest(clientSocket)
+        while (isRunning) {
+          val clientSocket = serverSocket.get.accept()
+          handleClientRequest(clientSocket)
+        }
+      } catch {
+        case e: Exception =>
+          println(s"Error starting server: ${e.getMessage}")
+          stopServer()
       }
     }
   }
@@ -31,17 +37,23 @@ object CentralizedServer {
   }
 
   def handleClientRequest(clientSocket: Socket): Future[Unit] = Future {
-    val in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream))
-    val out = new PrintWriter(clientSocket.getOutputStream, true)
+    try {
+      val in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream))
+      val out = new PrintWriter(clientSocket.getOutputStream, true)
 
-    val request = in.readLine()
-    println(s"Received request: $request")
+      val request = in.readLine()
+      println(s"Received request: $request")
 
-    // Handle the request and send a response
-    val response = s"Response to: $request"
-    out.println(response)
+      // Handle the request and send a response
+      val response = s"Response to: $request"
+      out.println(response)
 
-    clientSocket.close()
+      clientSocket.close()
+    } catch {
+      case e: Exception =>
+        println(s"Error handling client request: ${e.getMessage}")
+        clientSocket.close()
+    }
   }
 
   def restartServer(port: Int): Future[Unit] = {

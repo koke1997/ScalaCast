@@ -11,7 +11,8 @@ object ReliableTransmission {
   def sendData(peer: String, data: String): Future[Unit] = {
     def attemptSend(retryCount: Int): Future[Unit] = {
       if (retryCount >= retryLimit) {
-        restart()
+        handleTransmissionError(peer, "Retry limit reached")
+        Future.failed(new Exception("Retry limit reached"))
       } else {
         // Simulate sending data to peer
         println(s"Sending data to $peer: $data")
