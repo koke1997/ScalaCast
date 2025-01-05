@@ -52,6 +52,7 @@
             <h2>Login</h2>
             <input type="text" id="username" placeholder="Username">
             <input type="password" id="password" placeholder="Password">
+            <input type="file" id="subtitleFile" accept=".srt,.vtt">
             <button id="loginButton">Login</button>
         </div>
         <div class="options">
@@ -87,7 +88,12 @@
         document.getElementById('loginButton').addEventListener('click', function() {
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
+            const subtitleFile = document.getElementById('subtitleFile').files[0];
             console.log(`Logging in with username: ${username}`);
+            if (subtitleFile) {
+                console.log(`Uploading subtitle file: ${subtitleFile.name}`);
+                // Add logic to handle subtitle file upload
+            }
             // Add logic for user authentication
         });
 
@@ -123,6 +129,15 @@
         }
 
         completeFrontendLogic();
+
+        const streamingOptions = document.getElementById('streamingOptions');
+        streamingOptions.addEventListener('change', function() {
+            const selectedOption = streamingOptions.value;
+            if (selectedOption === 'adaptive') {
+                console.log('Adaptive bitrate streaming selected');
+                // Add logic to handle adaptive bitrate streaming
+            }
+        });
     </script>
 </body>
 </html>
