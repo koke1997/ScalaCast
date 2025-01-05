@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Frontend Interface - ScalaCast</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 80%;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        select, button {
+            margin: 10px;
+            padding: 10px;
+            font-size: 16px;
+        }
+        .monitoring, .scripts {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Frontend Interface</h1>
+        <div class="options">
+            <h2>Manage Options</h2>
+            <select id="optionSelect">
+                <option value="option1">Option 1</option>
+                <option value="option2">Option 2</option>
+                <option value="option3">Option 3</option>
+            </select>
+            <button id="applyOption">Apply Option</button>
+        </div>
+        <div class="monitoring">
+            <h2>Manage Monitorings</h2>
+            <button id="startMonitoring">Start Monitoring</button>
+            <button id="stopMonitoring">Stop Monitoring</button>
+        </div>
+        <div class="scripts">
+            <h2>Manage Scripts</h2>
+            <button id="runScript">Run Script</button>
+            <button id="stopScript">Stop Script</button>
+        </div>
+    </div>
+    <script>
+        document.getElementById('applyOption').addEventListener('click', function() {
+            const selectedOption = document.getElementById('optionSelect').value;
+            console.log(`Applying option: ${selectedOption}`);
+            // Add logic to apply the selected option
+        });
+
+        document.getElementById('startMonitoring').addEventListener('click', function() {
+            console.log('Starting monitoring...');
+            // Add logic to start monitoring
+        });
+
+        document.getElementById('stopMonitoring').addEventListener('click', function() {
+            console.log('Stopping monitoring...');
+            // Add logic to stop monitoring
+        });
+
+        document.getElementById('runScript').addEventListener('click', function() {
+            console.log('Running script...');
+            // Add logic to run the script
+        });
+
+        document.getElementById('stopScript').addEventListener('click', function() {
+            console.log('Stopping script...');
+            // Add logic to stop the script
+        });
+    </script>
+</body>
+</html>
