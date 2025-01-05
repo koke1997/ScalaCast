@@ -36,6 +36,8 @@ monitor_logs() {
 restart_services() {
     log_message "Restarting all services..."
     # Add logic to restart all services
+    systemctl restart erlangcast || handle_error "Failed to restart erlangcast service"
+    systemctl restart another_service || handle_error "Failed to restart another_service"
 }
 
 # Main monitoring function

@@ -5,7 +5,7 @@ def run_app(port1, port2, camera1, camera2, restart):
     if restart:
         cmd = f"sbt run & sbt run --setcookie port2 --name port2@127.0.0.1"
     else:
-        cmd = f"rebar3 shell & rebar3 shell --setcookie port2 --name port2@127.0.0.1"
+        cmd = f"sbt run & sbt run --setcookie port2 --name port2@127.0.0.1"
     subprocess.run(cmd, shell=True)
 
 if __name__ == "__main__":
