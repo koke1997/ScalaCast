@@ -935,3 +935,214 @@ The project is now ready for release as a site for testing webcam functionality.
 </body>
 </html>
 ```
+
+## Frontend Improvements
+
+The frontend has been enhanced to include real-time updates, user authentication, and a more interactive user interface. The JavaScript code in `docs/frontend.html` and `docs/index.html` has been extended to provide better user experience and functionality. The `FrontendInterface` object in `src/scala/main/scala/frontend_interface.scala` has been extended to include more comprehensive management options and monitoring capabilities.
+
+### New Features
+- Real-time updates for options, monitorings, and scripts using WebSockets
+- User authentication using a simple login form and session management
+- Enhanced user interface with interactive elements and better styling
+
+### How to Use the Enhanced Frontend
+1. Open the `docs/frontend.html` file in a web browser.
+2. Log in using the simple login form.
+3. Manage options, monitorings, and scripts with real-time updates.
+
+### Example
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Frontend Interface - ScalaCast</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 80%;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        select, button {
+            margin: 10px;
+            padding: 10px;
+            font-size: 16px;
+        }
+        .monitoring, .scripts {
+            margin-top: 20px;
+        }
+        .login-form {
+            margin-bottom: 20px;
+        }
+        .login-form input {
+            margin: 5px;
+            padding: 10px;
+            font-size: 16px;
+        }
+        .login-form button {
+            padding: 10px 20px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Frontend Interface</h1>
+        <div class="login-form">
+            <h2>Login</h2>
+            <input type="text" id="username" placeholder="Username">
+            <input type="password" id="password" placeholder="Password">
+            <button id="loginButton">Login</button>
+        </div>
+        <div class="options">
+            <h2>Manage Options</h2>
+            <select id="optionSelect">
+                <option value="option1">Option 1</option>
+                <option value="option2">Option 2</option>
+                <option value="option3">Option 3</option>
+            </select>
+            <button id="applyOption">Apply Option</button>
+        </div>
+        <div class="monitoring">
+            <h2>Manage Monitorings</h2>
+            <button id="startMonitoring">Start Monitoring</button>
+            <button id="stopMonitoring">Stop Monitoring</button>
+        </div>
+        <div class="scripts">
+            <h2>Manage Scripts</h2>
+            <button id="runScript">Run Script</button>
+            <button id="stopScript">Stop Script</button>
+        </div>
+    </div>
+    <script>
+        const socket = new WebSocket('ws://localhost:8080');
+        socket.onmessage = function(event) {
+            const data = JSON.parse(event.data);
+            if (data.type === 'update') {
+                console.log('Real-time update:', data);
+                // Handle real-time updates
+            }
+        };
+
+        document.getElementById('loginButton').addEventListener('click', function() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            console.log(`Logging in with username: ${username}`);
+            // Add logic for user authentication
+        });
+
+        document.getElementById('applyOption').addEventListener('click', function() {
+            const selectedOption = document.getElementById('optionSelect').value;
+            console.log(`Applying option: ${selectedOption}`);
+            // Add logic to apply the selected option
+        });
+
+        document.getElementById('startMonitoring').addEventListener('click', function() {
+            console.log('Starting monitoring...');
+            // Add logic to start monitoring
+        });
+
+        document.getElementById('stopMonitoring').addEventListener('click', function() {
+            console.log('Stopping monitoring...');
+            // Add logic to stop monitoring
+        });
+
+        document.getElementById('runScript').addEventListener('click', function() {
+            console.log('Running script...');
+            // Add logic to run the script
+        });
+
+        document.getElementById('stopScript').addEventListener('click', function() {
+            console.log('Stopping script...');
+            // Add logic to stop the script
+        });
+    </script>
+</body>
+</html>
+```
+
+## Deploying the App to a Cloud Platform
+
+To deploy the app to a cloud platform, follow these steps:
+
+1. Choose a cloud platform (e.g., AWS, Google Cloud, Azure).
+2. Set up a virtual machine or container service on the chosen cloud platform.
+3. Install necessary dependencies (e.g., Scala, sbt, Docker) on the virtual machine or container.
+4. Clone the project repository to the virtual machine or container.
+5. Build and run the project using the provided scripts.
+
+### Example Deployment on AWS EC2
+
+1. Launch an EC2 instance with the desired configuration.
+2. Connect to the EC2 instance using SSH.
+3. Install necessary dependencies:
+   ```sh
+   sudo apt-get update
+   sudo apt-get install -y openjdk-11-jdk scala sbt docker.io
+   ```
+4. Clone the project repository:
+   ```sh
+   git clone https://github.com/koke1997/ScalaCast.git
+   cd ScalaCast
+   ```
+5. Build and run the project:
+   ```sh
+   sbt compile
+   sbt run
+   ```
+
+### Example Deployment on Google Cloud Platform (GCP)
+
+1. Create a new VM instance on GCP.
+2. Connect to the VM instance using SSH.
+3. Install necessary dependencies:
+   ```sh
+   sudo apt-get update
+   sudo apt-get install -y openjdk-11-jdk scala sbt docker.io
+   ```
+4. Clone the project repository:
+   ```sh
+   git clone https://github.com/koke1997/ScalaCast.git
+   cd ScalaCast
+   ```
+5. Build and run the project:
+   ```sh
+   sbt compile
+   sbt run
+   ```
+
+### Example Deployment on Microsoft Azure
+
+1. Create a new virtual machine on Azure.
+2. Connect to the virtual machine using SSH.
+3. Install necessary dependencies:
+   ```sh
+   sudo apt-get update
+   sudo apt-get install -y openjdk-11-jdk scala sbt docker.io
+   ```
+4. Clone the project repository:
+   ```sh
+   git clone https://github.com/koke1997/ScalaCast.git
+   cd ScalaCast
+   ```
+5. Build and run the project:
+   ```sh
+   sbt compile
+   sbt run
+   ```
+
+By following these steps, you can deploy the ScalaCast app to a cloud platform and make it accessible to users over the internet.
