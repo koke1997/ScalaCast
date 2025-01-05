@@ -40,13 +40,18 @@ restart_services() {
     systemctl restart another_service || handle_error "Failed to restart another_service"
 }
 
-# Main monitoring function
-main() {
-    log_message "Starting monitoring..."
+# Function to monitor CPU, memory, and logs
+monitor_resources() {
     monitor_cpu &
     monitor_memory &
     monitor_logs &
     wait
+}
+
+# Main monitoring function
+main() {
+    log_message "Starting monitoring..."
+    monitor_resources
 }
 
 main
