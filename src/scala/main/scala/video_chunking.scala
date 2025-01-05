@@ -42,4 +42,18 @@ object VideoChunking {
       // Add logic to restart the video chunking service
     }
   }
+
+  def transcodeVideo(inputPath: String, outputPath: String, format: String): Try[Unit] = {
+    Try {
+      println(s"Transcoding video from $inputPath to $outputPath with format $format")
+      // Add logic to transcode the video
+    }
+  }
+
+  def encodeVideo(inputPath: String, outputPath: String, codec: String): Try[Unit] = {
+    Try {
+      println(s"Encoding video from $inputPath to $outputPath with codec $codec")
+      // Add logic to encode the video
+    }
+  }
 }

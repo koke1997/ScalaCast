@@ -31,6 +31,7 @@
         <option value="hls">HLS</option>
         <option value="dash">DASH</option>
         <option value="rtmp">RTMP</option>
+        <option value="adaptive">Adaptive Bitrate</option>
     </select>
     <select id="user1Camera">
         <option value="">Select Camera for User 1</option>
@@ -46,6 +47,7 @@
     </select>
     <div id="selectedCameraInput">
         <h2>Selected Camera Input</h2>
+        <input type="file" id="subtitleFile" accept=".srt,.vtt">
         <video id="selectedCameraVideo" autoplay controls></video>
     </div>
     <video id="videoElement" autoplay controls></video>
@@ -57,6 +59,7 @@
         const port1Camera = document.getElementById('port1Camera');
         const port2Camera = document.getElementById('port2Camera');
         const selectedCameraVideo = document.getElementById('selectedCameraVideo');
+        const subtitleFileInput = document.getElementById('subtitleFile');
 
         function getCameras() {
             return navigator.mediaDevices.enumerateDevices()
@@ -103,6 +106,9 @@
             } else if (selectedOption === 'rtmp') {
                 videoElement.src = 'rtmp://localhost/live/stream';
                 videoElement.play();
+            } else if (selectedOption === 'adaptive') {
+                console.log('Adaptive bitrate streaming selected');
+                // Add logic to handle adaptive bitrate streaming
             }
         });
 
@@ -145,8 +151,6 @@
                     .then(function(stream) {
                         videoElement.srcObject = stream;
                         videoElement.play();
-                        selectedCameraVideo.srcObject = stream;
-                        selectedCameraVideo.play();
                     })
                     .catch(function(error) {
                         console.error("Error accessing camera for Port 1: ", error);
@@ -161,12 +165,18 @@
                     .then(function(stream) {
                         videoElement.srcObject = stream;
                         videoElement.play();
-                        selectedCameraVideo.srcObject = stream;
-                        selectedCameraVideo.play();
                     })
                     .catch(function(error) {
                         console.error("Error accessing camera for Port 2: ", error);
                     });
+            }
+        });
+
+        subtitleFileInput.addEventListener('change', function() {
+            const subtitleFile = subtitleFileInput.files[0];
+            if (subtitleFile) {
+                console.log(`Uploading subtitle file: ${subtitleFile.name}`);
+                // Add logic to handle subtitle file upload
             }
         });
 
