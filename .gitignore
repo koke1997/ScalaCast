@@ -1,20 +1,9 @@
-.eunit
-*.o
-*.beam
-*.plt
-erl_crash.dump
-.concrete/DEV_MODE
-
-# rebar 2.x
-.rebar
-rel/example_project
-ebin/*.beam
-deps
-
-# rebar 3
-.rebar3
-_build/
-_checkouts/
-
-# Peer discovery related files
-peer_discovery.log
+.bloop
+.bsp
+.metals
+.vscode
+target
+project/project
+project/target
+project/.bloop
+project/.metals
