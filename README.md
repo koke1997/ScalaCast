@@ -927,9 +927,51 @@ The project is now ready for release as a site for testing webcam functionality.
             }
         });
 
+        subtitleFileInput.addEventListener('change', function() {
+            const subtitleFile = subtitleFileInput.files[0];
+            if (subtitleFile) {
+                console.log(`Uploading subtitle file: ${subtitleFile.name}`);
+                // Add logic to handle subtitle file upload
+            }
+        });
+
         // Initialize with webcam option
         streamingOptions.value = 'webcam';
         streamingOptions.dispatchEvent(new Event('change'));
+
+        // WebSocket connection for real-time updates
+        const socket = new WebSocket('ws://localhost:8080');
+        socket.onmessage = function(event) {
+            const data = JSON.parse(event.data);
+            if (data.type === 'update') {
+                console.log('Real-time update:', data);
+                // Handle real-time updates
+            }
+        };
+
+        // User authentication
+        const loginForm = document.createElement('div');
+        loginForm.innerHTML = `
+            <h2>Login</h2>
+            <input type="text" id="username" placeholder="Username">
+            <input type="password" id="password" placeholder="Password">
+            <button id="loginButton">Login</button>
+        `;
+        document.body.insertBefore(loginForm, document.body.firstChild);
+
+        document.getElementById('loginButton').addEventListener('click', function() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            console.log(`Logging in with username: ${username}`);
+            // Add logic for user authentication
+        });
+
+        // Complete the frontend logic for streaming options and camera inputs
+        function completeFrontendLogic() {
+            // Add logic to complete the frontend logic
+        }
+
+        completeFrontendLogic();
     </script>
     <!-- Scala is used for the frontend -->
 </body>
