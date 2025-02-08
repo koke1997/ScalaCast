@@ -2,11 +2,16 @@ import subprocess
 import argparse
 
 def run_app(port1, port2, camera1, camera2, restart):
-    if restart:
-        cmd = f"sbt run & sbt run --setcookie port2 --name port2@127.0.0.1"
-    else:
-        cmd = f"sbt run & sbt run --setcookie port2 --name port2@127.0.0.1"
-    subprocess.run(cmd, shell=True)
+    try:
+        if restart:
+            cmd = f"sbt run & sbt run --setcookie port2 --name port2@127.0.0.1"
+        else:
+            cmd = f"sbt run & sbt run --setcookie port2 --name port2@127.0.0.1"
+        subprocess.run(cmd, shell=True)
+    except subprocess.CalledProcessError as e:
+        print(f"Error occurred while running the app: {e}")
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run the app on multiple ports with camera inputs")
