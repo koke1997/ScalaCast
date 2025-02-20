@@ -1,3 +1,5 @@
+package services
+
 import java.io.FileInputStream
 import java.security.KeyStore
 import javax.net.ssl.{KeyManagerFactory, SSLContext, TrustManagerFactory}

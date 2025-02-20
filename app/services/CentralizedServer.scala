@@ -1,10 +1,13 @@
+package services
+
 import scala.concurrent.{Future, ExecutionContext}
 import scala.util.{Success, Failure}
 import java.net.{ServerSocket, Socket}
 import java.io.{BufferedReader, InputStreamReader, PrintWriter}
+import javax.inject._
 
-object CentralizedServer {
-  implicit val ec: ExecutionContext = ExecutionContext.global
+@Singleton
+class CentralizedServer @Inject()(implicit ec: ExecutionContext) {
 
   private var serverSocket: Option[ServerSocket] = None
   private var isRunning = false

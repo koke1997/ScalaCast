@@ -1,9 +1,10 @@
+package services
+
 import scala.concurrent.{Future, ExecutionContext}
 import scala.util.{Success, Failure}
 import java.net.ServerSocket
 
-object PortExposure {
-  implicit val ec: ExecutionContext = ExecutionContext.global
+class PortExposureService @Inject()(implicit ec: ExecutionContext) {
 
   private var serverSockets: Map[Int, ServerSocket] = Map.empty
 
