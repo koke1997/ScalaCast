@@ -1,5 +1,5 @@
 # ScalaCast
-ScalaCast is a centralized server streaming video server built with Scala, leveraging its strengths in concurrency and distributed programming. Features include centralized server, video chunking, reliable data transmission, and fault-tolerant architecture. Ideal for real-time streaming and centralized applications.
+ScalaCast is a centralized server streaming video server built with Scala, leveraging its strengths in concurrency and distributed programming. Features include centralized server, reliable data transmission, and fault-tolerant architecture. Ideal for real-time streaming and centralized applications.
 
 ## Centralized Server
 The centralized server feature allows clients to connect to a central server for efficient communication and data sharing.
@@ -26,28 +26,153 @@ Await.result(CentralizedServer.handleClientRequest(clientSocket), 5.seconds)
 Await.result(CentralizedServer.stopServer(), 5.seconds)
 ```
 
-## Video Chunking
-The video chunking feature allows the system to divide video files into smaller chunks for transmission, enabling efficient streaming and data handling.
+## Fault Tolerance
+The fault tolerance feature ensures that the system can handle failures gracefully and continue operating. This includes error handling and recovery mechanisms in various modules.
 
-### How to Use Video Chunking
-1. Chunk a video file by calling the `VideoChunking.chunkVideo` function with the video file path and chunk size as arguments.
-2. Retrieve a specific chunk of a video file using the `VideoChunking.getChunk` function with the video file path and chunk index as arguments.
+### How to Use Fault Tolerance
+1. Start the fault tolerance service by calling the `FaultTolerance.start` function.
+2. Handle errors using the `FaultTolerance.handleError` function.
+3. Recover from errors using the `FaultTolerance.recover` function.
+4. Stop the fault tolerance service by calling the `FaultTolerance.stop` function.
 
 ### Example
 ```scala
-import scala.util.{Success, Failure}
+import scala.concurrent.Await
+import scala.concurrent.duration._
 
-// Chunk a video file into 1MB chunks
-VideoChunking.chunkVideo("path/to/video.mp4", 1048576) match {
-  case Success(chunks) => println(s"Video chunked into ${chunks.length} parts")
-  case Failure(exception) => println(s"Failed to chunk video: ${exception.getMessage}")
-}
+implicit val ec: ExecutionContext = ExecutionContext.global
 
-// Retrieve the first chunk of the video file
-VideoChunking.getChunk("path/to/video.mp4", 1) match {
-  case Success(chunk) => println(s"Retrieved chunk of size ${chunk.length}")
-  case Failure(exception) => println(s"Failed to retrieve chunk: ${exception.getMessage}")
-}
+// Start the fault tolerance service
+Await.result(FaultTolerance.start(), 5.seconds)
+
+// Handle an error
+Await.result(FaultTolerance.handleError("Critical"), 5.seconds)
+
+// Recover from an error
+Await.result(FaultTolerance.recover("Critical"), 5.seconds)
+
+// Stop the fault tolerance service
+Await.result(FaultTolerance.stop(), 5.seconds)
+```
+
+## Frontend Interface
+The frontend interface feature allows for managing options, monitorings, and scripts through a web interface.
+
+### How to Use Frontend Interface
+1. Manage options by calling the `FrontendInterface.manageOptions` function.
+2. Manage monitorings by calling the `FrontendInterface.manageMonitorings` function.
+3. Manage scripts by calling the `FrontendInterface.manageScripts` function.
+4. Start the frontend interface by calling the `FrontendInterface.start` function.
+
+### Example
+```scala
+import scala.concurrent.Await
+import scala.concurrent.duration._
+
+implicit val ec: ExecutionContext = ExecutionContext.global
+
+// Start the frontend interface
+Await.result(FrontendInterface.start(), 5.seconds)
+
+// Manage options
+Await.result(FrontendInterface.manageOptions(), 5.seconds)
+
+// Manage monitorings
+Await.result(FrontendInterface.manageMonitorings(), 5.seconds)
+
+// Manage scripts
+Await.result(FrontendInterface.manageScripts(), 5.seconds)
+```
+
+## Monitoring Service
+The monitoring service feature allows for monitoring CPU usage, memory usage, and logs for errors.
+
+### How to Use Monitoring Service
+1. Monitor CPU usage by calling the `MonitoringService.monitorCPU` function.
+2. Monitor memory usage by calling the `MonitoringService.monitorMemory` function.
+3. Monitor logs for errors by calling the `MonitoringService.monitorLogs` function.
+4. Restart a service by calling the `MonitoringService.restartService` function.
+
+### Example
+```scala
+import scala.concurrent.Await
+import scala.concurrent.duration._
+
+implicit val ec: ExecutionContext = ExecutionContext.global
+
+// Monitor CPU usage
+Await.result(MonitoringService.monitorCPU(), 5.seconds)
+
+// Monitor memory usage
+Await.result(MonitoringService.monitorMemory(), 5.seconds)
+
+// Monitor logs for errors
+Await.result(MonitoringService.monitorLogs(), 5.seconds)
+
+// Restart a service
+Await.result(MonitoringService.restartService("serviceName"), 5.seconds)
+```
+
+## Peer Discovery
+The peer discovery feature allows for discovering and communicating with peers in a network.
+
+### How to Use Peer Discovery
+1. Start the peer discovery service by calling the `PeerDiscovery.start` function.
+2. Handle incoming messages using the `PeerDiscovery.handleMessage` function.
+3. Broadcast messages to peers using the `PeerDiscovery.broadcastMessage` function.
+4. Stop the peer discovery service by calling the `PeerDiscovery.stop` function.
+
+### Example
+```scala
+import scala.concurrent.Await
+import scala.concurrent.duration._
+
+implicit val ec: ExecutionContext = ExecutionContext.global
+
+// Start the peer discovery service
+Await.result(PeerDiscovery.start(), 5.seconds)
+
+// Handle an incoming message
+Await.result(PeerDiscovery.handleMessage("Hello, peer!"), 5.seconds)
+
+// Broadcast a message to peers
+Await.result(PeerDiscovery.broadcastMessage("Hello, peers!"), 5.seconds)
+
+// Stop the peer discovery service
+Await.result(PeerDiscovery.stop(), 5.seconds)
+```
+
+## Port Exposure Service
+The port exposure service feature allows for exposing and closing ports for end users and manual operators.
+
+### How to Use Port Exposure Service
+1. Expose a port by calling the `PortExposureService.exposePort` function.
+2. Close a port by calling the `PortExposureService.closePort` function.
+3. Expose ports for end users by calling the `PortExposureService.exposePortsForEndUsers` function.
+4. Expose ports for manual operators by calling the `PortExposureService.exposePortsForManualOperators` function.
+5. Close all ports by calling the `PortExposureService.closeAllPorts` function.
+
+### Example
+```scala
+import scala.concurrent.Await
+import scala.concurrent.duration._
+
+implicit val ec: ExecutionContext = ExecutionContext.global
+
+// Expose a port
+Await.result(PortExposureService.exposePort(8080), 5.seconds)
+
+// Close a port
+Await.result(PortExposureService.closePort(8080), 5.seconds)
+
+// Expose ports for end users
+Await.result(PortExposureService.exposePortsForEndUsers(List(8080, 8081)), 5.seconds)
+
+// Expose ports for manual operators
+Await.result(PortExposureService.exposePortsForManualOperators(List(8082, 8083)), 5.seconds)
+
+// Close all ports
+Await.result(PortExposureService.closeAllPorts(), 5.seconds)
 ```
 
 ## Reliable Data Transmission
@@ -74,14 +199,41 @@ val dataHandler: String => Unit = data => println(s"Received data: $data")
 Await.result(ReliableTransmission.receiveData(dataHandler), 5.seconds)
 ```
 
-## Fault-Tolerant Architecture
-The fault-tolerant architecture ensures that the system can handle failures gracefully and continue operating. This includes error handling and recovery mechanisms in various modules.
+## SSL Configuration
+The SSL configuration feature allows for configuring SSL context and applying it to the system.
 
-### Fault-Tolerant Features
-1. **Centralized Server**: The `CentralizedServer` module includes error handling and recovery mechanisms for server failures.
-2. **Reliable Transmission**: The `ReliableTransmission` module includes error handling for retry limit reached and logs the error.
-3. **Video Chunking**: The `VideoChunking` module includes error handling for file operations and chunking process.
-4. **System Configuration**: The `sys.config` file includes fault-tolerance configurations for the system.
+### How to Use SSL Configuration
+1. Load a key store by calling the `SSLConfiguration.loadKeyStore` function.
+2. Create an SSL context by calling the `SSLConfiguration.createSSLContext` function.
+3. Apply the SSL context by calling the `SSLConfiguration.applySSLContext` function.
+4. Configure SSL by calling the `SSLConfiguration.configureSSL` function.
+
+### Example
+```scala
+import scala.util.{Success, Failure}
+
+// Load a key store
+val keyStore = SSLConfiguration.loadKeyStore("path/to/keystore.jks", "password", "JKS")
+
+// Create an SSL context
+val sslContext = SSLConfiguration.createSSLContext("path/to/keystore.jks", "password", "JKS", "path/to/truststore.jks", "password", "JKS")
+
+// Apply the SSL context
+SSLConfiguration.applySSLContext(sslContext)
+
+// Configure SSL
+SSLConfiguration.configureSSL("path/to/keystore.jks", "password", "JKS", "path/to/truststore.jks", "password", "JKS") match {
+  case Success(_) => println("SSL configured successfully")
+  case Failure(exception) => println(s"Failed to configure SSL: ${exception.getMessage}")
+}
+```
+
+## Video Streaming
+The video streaming feature allows for adaptive bitrate streaming and subtitle support.
+
+### How to Use Video Streaming
+1. Start adaptive bitrate streaming by calling the `VideoStreaming.startAdaptiveBitrateStreaming` function.
+2. Start subtitle support by calling the `VideoStreaming.startSubtitleSupport` function.
 
 ### Example
 ```scala
@@ -90,44 +242,11 @@ import scala.concurrent.duration._
 
 implicit val ec: ExecutionContext = ExecutionContext.global
 
-// Example of error handling in centralized server
-Await.result(CentralizedServer.startServer(8080), 5.seconds) match {
-  case Success(_) => println("Centralized server started successfully")
-  case Failure(exception) => println(s"Failed to start centralized server: ${exception.getMessage}")
-}
+// Start adaptive bitrate streaming
+Await.result(VideoStreaming.startAdaptiveBitrateStreaming("path/to/video.mp4", "path/to/output"), 5.seconds)
 
-// Example of error handling in reliable transmission
-Await.result(ReliableTransmission.sendData("client1", "Hello, client!"), 5.seconds) match {
-  case Success(_) => println("Data sent successfully")
-  case Failure(exception) => println(s"Failed to send data: ${exception.getMessage}")
-}
-
-// Example of error handling in video chunking
-VideoChunking.chunkVideo("path/to/video.mp4", 1048576) match {
-  case Success(chunks) => println("Video chunked successfully")
-  case Failure(exception) => println(s"Failed to chunk video: ${exception.getMessage}")
-}
-```
-
-## Scala Connector
-The Scala connector enables communication between the Scala server and the Scala videoserver, leveraging Akka for actor-based communication. Scala is also used to raise the needed frontend to interact with the videoserver.
-
-### How to Use Scala Connector
-1. Set up Scala and necessary dependencies.
-2. Use the `ScalaConnector` object to send and receive messages between Scala and the videoserver.
-
-### Example
-```scala
-import ScalaConnector._
-
-object Main extends App {
-  // Send a message to the videoserver
-  sendToErlang("Hello, videoserver!")
-
-  // Receive a message from the videoserver
-  val message = Await.result(receiveFromErlang(), 5.seconds)
-  println(s"Received message from videoserver: $message")
-}
+// Start subtitle support
+Await.result(VideoStreaming.startSubtitleSupport("path/to/video.mp4", "path/to/subtitles.srt"), 5.seconds)
 ```
 
 ## Setting Up and Running the Scala Frontend
@@ -433,9 +552,8 @@ The ScalaCast project now includes a microservices architecture for easier integ
 ### Microservices Overview
 
 1. **Centralized Server Service**: Handles client connections and requests.
-2. **Video Chunking Service**: Manages video chunking for efficient streaming.
-3. **Reliable Transmission Service**: Ensures reliable data transmission between clients and the server.
-4. **Fault Tolerance Service**: Provides fault tolerance and error recovery mechanisms.
+2. **Reliable Transmission Service**: Ensures reliable data transmission between clients and the server.
+3. **Fault Tolerance Service**: Provides fault tolerance and error recovery mechanisms.
 
 ### Setting Up and Running Microservices
 
@@ -446,14 +564,12 @@ To set up and run the microservices, follow these steps:
 3. Build the Docker images for each microservice:
    ```sh
    docker build -t centralized-server-service -f Dockerfile .
-   docker build -t video-chunking-service -f Dockerfile .
    docker build -t reliable-transmission-service -f Dockerfile .
    docker build -t fault-tolerance-service -f Dockerfile .
    ```
 4. Run the Docker containers for each microservice:
    ```sh
    docker run -d --name centralized-server-service centralized-server-service
-   docker run -d --name video-chunking-service video-chunking-service
    docker run -d --name reliable-transmission-service reliable-transmission-service
    docker run -d --name fault-tolerance-service fault-tolerance-service
    ```
@@ -468,14 +584,6 @@ The Centralized Server Service handles client connections and requests.
 - `startServer`: Starts the centralized server.
 - `stopServer`: Stops the centralized server.
 - `handleClientRequest`: Handles client requests.
-
-#### Video Chunking Service
-
-The Video Chunking Service manages video chunking for efficient streaming.
-
-**Functions**:
-- `chunkVideo`: Chunks a video file into smaller chunks.
-- `getChunk`: Retrieves a specific chunk of a video file.
 
 #### Reliable Transmission Service
 
