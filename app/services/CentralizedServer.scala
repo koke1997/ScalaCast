@@ -29,6 +29,7 @@ class CentralizedServer @Inject()(implicit ec: ExecutionContext) {
         case e: Exception =>
           println(s"Error starting server: ${e.getMessage}")
           stopServer()
+          retryServerStart(port)
       }
     }
   }
@@ -64,5 +65,16 @@ class CentralizedServer @Inject()(implicit ec: ExecutionContext) {
       _ <- stopServer()
       _ <- startServer(port)
     } yield ()
+  }
+
+  private def retryServerStart(port: Int, retryCount: Int = 0): Future[Unit] = {
+    if (retryCount < 3) {
+      println(s"Retrying server start... Attempt ${retryCount + 1}")
+      startServer(port).recoverWith {
+        case _ => retryServerStart(port, retryCount + 1)
+      }
+    } else {
+      Future.failed(new Exception("Failed to start server after 3 attempts"))
+    }
   }
 }

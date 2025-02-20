@@ -65,4 +65,23 @@ object ReliableTransmission {
   def start(): Future[Unit] = Future {
     println("Reliable transmission service started.")
   }
+
+  def retryDataTransmission(peer: String, data: String, retryCount: Int = 0): Future[Unit] = {
+    if (retryCount < retryLimit) {
+      println(s"Retrying data transmission to $peer... Attempt ${retryCount + 1}")
+      sendData(peer, data).recoverWith {
+        case _ => retryDataTransmission(peer, data, retryCount + 1)
+      }
+    } else {
+      Future.failed(new Exception(s"Failed to transmit data to $peer after $retryLimit attempts"))
+    }
+  }
+
+  def logDataTransmission(peer: String, data: String): Unit = {
+    println(s"Data transmission to $peer: $data")
+  }
+
+  def logAcknowledgment(peer: String): Unit = {
+    println(s"Acknowledgment received from $peer")
+  }
 }
