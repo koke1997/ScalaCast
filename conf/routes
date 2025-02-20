@@ -1,0 +1,60 @@
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# ~~~~
+
+# Home page
+GET     /                           controllers.HomeController.index
+
+# Centralized Server
+GET     /centralized-server         controllers.CentralizedServerController.index
+POST    /centralized-server/start   controllers.CentralizedServerController.startServer
+POST    /centralized-server/stop    controllers.CentralizedServerController.stopServer
+
+# Fault Tolerance
+GET     /fault-tolerance            controllers.FaultToleranceController.index
+POST    /fault-tolerance/start      controllers.FaultToleranceController.start
+POST    /fault-tolerance/stop       controllers.FaultToleranceController.stop
+
+# Frontend Interface
+GET     /frontend-interface         controllers.FrontendInterfaceController.index
+POST    /frontend-interface/manage-options    controllers.FrontendInterfaceController.manageOptions
+POST    /frontend-interface/manage-monitorings controllers.FrontendInterfaceController.manageMonitorings
+POST    /frontend-interface/manage-scripts    controllers.FrontendInterfaceController.manageScripts
+
+# Monitoring
+GET     /monitoring                 controllers.MonitoringController.index
+POST    /monitoring/cpu             controllers.MonitoringController.monitorCPU
+POST    /monitoring/memory          controllers.MonitoringController.monitorMemory
+POST    /monitoring/logs            controllers.MonitoringController.monitorLogs
+POST    /monitoring/restart         controllers.MonitoringController.restartService
+
+# Peer Discovery
+GET     /peer-discovery             controllers.PeerDiscoveryController.index
+POST    /peer-discovery/start       controllers.PeerDiscoveryController.start
+POST    /peer-discovery/stop        controllers.PeerDiscoveryController.stop
+POST    /peer-discovery/handle      controllers.PeerDiscoveryController.handleMessage
+POST    /peer-discovery/broadcast   controllers.PeerDiscoveryController.broadcastMessage
+
+# Port Exposure
+GET     /port-exposure              controllers.PortExposureController.index
+POST    /port-exposure/expose       controllers.PortExposureController.exposePort
+POST    /port-exposure/close        controllers.PortExposureController.closePort
+POST    /port-exposure/expose-end-users controllers.PortExposureController.exposePortsForEndUsers
+POST    /port-exposure/expose-manual-operators controllers.PortExposureController.exposePortsForManualOperators
+POST    /port-exposure/close-all    controllers.PortExposureController.closeAllPorts
+
+# Reliable Transmission
+GET     /reliable-transmission      controllers.ReliableTransmissionController.index
+POST    /reliable-transmission/send controllers.ReliableTransmissionController.sendData
+POST    /reliable-transmission/receive controllers.ReliableTransmissionController.receiveData
+
+# SSL Configuration
+GET     /ssl-configuration          controllers.SSLConfigurationController.index
+POST    /ssl-configuration/load-keystore controllers.SSLConfigurationController.loadKeyStore
+POST    /ssl-configuration/create-ssl-context controllers.SSLConfigurationController.createSSLContext
+POST    /ssl-configuration/apply-ssl-context controllers.SSLConfigurationController.applySSLContext
+
+# Video Streaming
+GET     /video-streaming            controllers.VideoStreamingController.index
+POST    /video-streaming/start-adaptive-bitrate controllers.VideoStreamingController.startAdaptiveBitrateStreaming
+POST    /video-streaming/start-subtitle-support controllers.VideoStreamingController.startSubtitleSupport

@@ -1,3 +1,5 @@
+package services
+
 import scala.concurrent.{Future, ExecutionContext}
 import scala.concurrent.duration._
 import scala.util.{Success, Failure}

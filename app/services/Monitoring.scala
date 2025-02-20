@@ -1,9 +1,10 @@
+package services
+
 import scala.concurrent.{Future, ExecutionContext}
 import scala.sys.process._
 import scala.util.{Success, Failure}
 
-object Monitoring {
-  implicit val ec: ExecutionContext = ExecutionContext.global
+class MonitoringService @Inject()(implicit ec: ExecutionContext) {
 
   def monitorCPU(): Future[Unit] = Future {
     val cpuUsage = "top -b -n1 | grep 'Cpu(s)' | awk '{print $2 + $4}'".!!
