@@ -22,6 +22,10 @@ object PeerDiscovery {
         broadcastMessage("Hello, peers!")
       }
     }
+  }.recoverWith {
+    case e: Exception =>
+      println(s"Error starting peer discovery: ${e.getMessage}")
+      retryPeerDiscoveryStart()
   }
 
   def stop(): Future[Unit] = Future {
@@ -44,6 +48,10 @@ object PeerDiscovery {
     println(s"Broadcasting peer discovery message: $message")
     // Broadcast peer discovery message to all peers
     peers.foreach(peer => println(s"Message sent to $peer: $message"))
+  }.recoverWith {
+    case e: Exception =>
+      println(s"Error broadcasting peer discovery message: ${e.getMessage}")
+      retryBroadcastMessage(message)
   }
 
   def restart(): Future[Unit] = {
@@ -51,5 +59,27 @@ object PeerDiscovery {
       _ <- stop()
       _ <- start()
     } yield ()
+  }
+
+  private def retryPeerDiscoveryStart(retryCount: Int = 0): Future[Unit] = {
+    if (retryCount < 3) {
+      println(s"Retrying peer discovery start... Attempt ${retryCount + 1}")
+      start().recoverWith {
+        case _ => retryPeerDiscoveryStart(retryCount + 1)
+      }
+    } else {
+      Future.failed(new Exception("Failed to start peer discovery after 3 attempts"))
+    }
+  }
+
+  private def retryBroadcastMessage(message: String, retryCount: Int = 0): Future[Unit] = {
+    if (retryCount < 3) {
+      println(s"Retrying broadcast message... Attempt ${retryCount + 1}")
+      broadcastMessage(message).recoverWith {
+        case _ => retryBroadcastMessage(message, retryCount + 1)
+      }
+    } else {
+      Future.failed(new Exception("Failed to broadcast message after 3 attempts"))
+    }
   }
 }

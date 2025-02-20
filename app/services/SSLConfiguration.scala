@@ -3,6 +3,7 @@ package services
 import java.io.FileInputStream
 import java.security.KeyStore
 import javax.net.ssl.{KeyManagerFactory, SSLContext, TrustManagerFactory}
+import scala.util.{Try, Success, Failure}
 
 object SSLConfiguration {
 
@@ -32,5 +33,31 @@ object SSLConfiguration {
 
   def applySSLContext(sslContext: SSLContext): Unit = {
     SSLContext.setDefault(sslContext)
+  }
+
+  def configureSSL(keyStorePath: String, keyStorePassword: String, keyStoreType: String,
+                   trustStorePath: String, trustStorePassword: String, trustStoreType: String): Try[Unit] = {
+    Try {
+      val sslContext = createSSLContext(keyStorePath, keyStorePassword, keyStoreType, trustStorePath, trustStorePassword, trustStoreType)
+      applySSLContext(sslContext)
+      println("SSL context successfully created and applied.")
+    } match {
+      case Success(_) => Success(())
+      case Failure(exception) =>
+        println(s"Error configuring SSL: ${exception.getMessage}")
+        retrySSLConfiguration(keyStorePath, keyStorePassword, keyStoreType, trustStorePath, trustStorePassword, trustStoreType)
+    }
+  }
+
+  private def retrySSLConfiguration(keyStorePath: String, keyStorePassword: String, keyStoreType: String,
+                                    trustStorePath: String, trustStorePassword: String, trustStoreType: String, retryCount: Int = 0): Try[Unit] = {
+    if (retryCount < 3) {
+      println(s"Retrying SSL configuration... Attempt ${retryCount + 1}")
+      configureSSL(keyStorePath, keyStorePassword, keyStoreType, trustStorePath, trustStorePassword, trustStoreType).recoverWith {
+        case _ => retrySSLConfiguration(keyStorePath, keyStorePassword, keyStoreType, trustStorePath, trustStorePassword, trustStoreType, retryCount + 1)
+      }
+    } else {
+      Failure(new Exception("Failed to configure SSL after 3 attempts"))
+    }
   }
 }

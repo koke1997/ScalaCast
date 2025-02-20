@@ -28,7 +28,9 @@ object FaultTolerance {
     errorCount += 1
     // Add detailed error handling logic
     error match {
-      case "Critical" => println("Critical error occurred. Taking necessary actions.")
+      case "Critical" => 
+        println("Critical error occurred. Taking necessary actions.")
+        retryCriticalError()
       case "Warning" => println("Warning: Please check the system.")
       case _ => println("Unknown error type.")
     }
@@ -47,5 +49,16 @@ object FaultTolerance {
       _ <- stop()
       _ <- start()
     } yield ()
+  }
+
+  private def retryCriticalError(retryCount: Int = 0): Future[Unit] = {
+    if (retryCount < 3) {
+      println(s"Retrying critical error recovery... Attempt ${retryCount + 1}")
+      handleError("Critical").recoverWith {
+        case _ => retryCriticalError(retryCount + 1)
+      }
+    } else {
+      Future.failed(new Exception("Failed to recover from critical error after 3 attempts"))
+    }
   }
 }
