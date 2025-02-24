@@ -915,6 +915,7 @@ The project is now ready for release as a site for testing webcam functionality.
     </select>
     <div id="selectedCameraInput">
         <h2>Selected Camera Input</h2>
+        <input type="file" id="subtitleFile" accept=".srt,.vtt">
         <video id="selectedCameraVideo" autoplay controls></video>
     </div>
     <video id="videoElement" autoplay controls></video>
@@ -926,6 +927,7 @@ The project is now ready for release as a site for testing webcam functionality.
         const port1Camera = document.getElementById('port1Camera');
         const port2Camera = document.getElementById('port2Camera');
         const selectedCameraVideo = document.getElementById('selectedCameraVideo');
+        const subtitleFileInput = document.getElementById('subtitleFile');
 
         function getCameras() {
             return navigator.mediaDevices.enumerateDevices()
@@ -972,6 +974,9 @@ The project is now ready for release as a site for testing webcam functionality.
             } else if (selectedOption === 'rtmp') {
                 videoElement.src = 'rtmp://localhost/live/stream';
                 videoElement.play();
+            } else if (selectedOption === 'adaptive') {
+                console.log('Adaptive bitrate streaming selected');
+                // Add logic to handle adaptive bitrate streaming
             }
         });
 

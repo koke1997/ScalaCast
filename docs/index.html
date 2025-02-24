@@ -219,5 +219,56 @@
         completeFrontendLogic();
     </script>
     <!-- Scala is used for the frontend -->
+    <h2>Setting Up GitHub Pages</h2>
+    <p>To set up GitHub Pages for this project, follow these steps:</p>
+    <ol>
+        <li>Ensure that the GitHub repository is set up with GitHub Pages enabled.</li>
+        <li>Add the GitHub Actions workflow file (<code>.github/workflows/deploy.yml</code>) to automate the deployment process.</li>
+        <li>Push the changes to the <code>main</code> branch.</li>
+    </ol>
+    <p>The GitHub Actions workflow will automatically build and deploy the app to GitHub Pages.</p>
+    <h2>Example Workflow File</h2>
+    <pre><code>
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Java
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt'
+          java-version: '11'
+
+      - name: Set up Scala
+        run: |
+          echo "deb https://repo.scala-sbt.org/scalasbt/debian all main" | sudo tee /etc/apt/sources.list.d/sbt.list
+          echo "deb https://repo.scala-sbt.org/scalasbt/debian /" | sudo tee /etc/apt/sources.list.d/sbt_old.list
+          curl -sL "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x2EE0EA64E40A89B84B2DF73499E82A75642AC823" | sudo apt-key add
+          sudo apt-get update
+          sudo apt-get install sbt
+
+      - name: Compile Scala code
+        run: sbt compile
+
+      - name: Build frontend
+        run: sbt fullOptJS
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs
+    </code></pre>
 </body>
 </html>

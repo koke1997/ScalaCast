@@ -91,3 +91,6 @@ GET     /api-docs                          controllers.DocumentationController.g
 POST    /webhooks                          controllers.WebhookController.createWebhook
 GET     /webhooks/:webhookId               controllers.WebhookController.getWebhookById
 DELETE  /webhooks/:webhookId               controllers.WebhookController.deleteWebhook
+
+# Static file serving
+GET     /public/*file                      controllers.Assets.at(path="/public", file)
