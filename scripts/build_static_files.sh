@@ -6,7 +6,7 @@
 sbt compile
 
 # Generate static files
-sbt fullOptJS
+sbt stage
 
 # Copy generated files to the docs directory
 cp -r target/scala-2.13/scalajs-bundler/main/* docs/

@@ -506,7 +506,7 @@ jobs:
         run: sbt compile
 
       - name: Build frontend
-        run: sbt fullOptJS
+        run: sbt stage
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
@@ -900,6 +900,7 @@ The project is now ready for release as a site for testing webcam functionality.
         <option value="hls">HLS</option>
         <option value="dash">DASH</option>
         <option value="rtmp">RTMP</option>
+        <option value="adaptive">Adaptive Bitrate</option>
     </select>
     <select id="user1Camera">
         <option value="">Select Camera for User 1</option>

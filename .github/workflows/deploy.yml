@@ -31,7 +31,7 @@ jobs:
         run: sbt compile
 
       - name: Build frontend
-        run: sbt fullOptJS
+        run: sbt stage
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
