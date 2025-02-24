@@ -4,6 +4,7 @@ import javax.inject._
 import play.api.mvc._
 import services.PortExposureService
 import scala.concurrent.{ExecutionContext, Future}
+import play.api.libs.json.JsObject
 
 @Singleton
 class PortExposureController @Inject()(cc: ControllerComponents, portExposureService: PortExposureService)(implicit ec: ExecutionContext) extends AbstractController(cc) {
