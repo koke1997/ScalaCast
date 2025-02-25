@@ -13,8 +13,7 @@ class PortExposureController @Inject()(cc: ControllerComponents, portExposureSer
     Future.successful(Ok("Port Exposure Controller"))
   }
 
-  def exposePort() = Action.async(parse.json) { implicit request: Request[AnyContent] =>
-    val port = (request.body \ "port").as[Int]
+  def exposePort(port: Int) = Action.async(parse.json) { implicit request: Request[AnyContent] =>
     portExposureService.exposePort(port).map { _ =>
       Ok(s"Port $port exposed successfully.")
     }.recover {
@@ -22,8 +21,7 @@ class PortExposureController @Inject()(cc: ControllerComponents, portExposureSer
     }
   }
 
-  def closePort() = Action.async(parse.json) { implicit request: Request[AnyContent] =>
-    val port = (request.body \ "port").as[Int]
+  def closePort(port: Int) = Action.async(parse.json) { implicit request: Request[AnyContent] =>
     portExposureService.closePort(port).map { _ =>
       Ok(s"Port $port closed successfully.")
     }.recover {
@@ -31,8 +29,7 @@ class PortExposureController @Inject()(cc: ControllerComponents, portExposureSer
     }
   }
 
-  def exposePortsForEndUsers() = Action.async(parse.json) { implicit request: Request[AnyContent] =>
-    val ports = (request.body \ "ports").as[List[Int]]
+  def exposePortsForEndUsers(ports: List[Int]) = Action.async(parse.json) { implicit request: Request[AnyContent] =>
     portExposureService.exposePortsForEndUsers(ports).map { _ =>
       Ok(s"Ports ${ports.mkString(", ")} exposed successfully for end users.")
     }.recover {
@@ -40,8 +37,7 @@ class PortExposureController @Inject()(cc: ControllerComponents, portExposureSer
     }
   }
 
-  def exposePortsForManualOperators() = Action.async(parse.json) { implicit request: Request[AnyContent] =>
-    val ports = (request.body \ "ports").as[List[Int]]
+  def exposePortsForManualOperators(ports: List[Int]) = Action.async(parse.json) { implicit request: Request[AnyContent] =>
     portExposureService.exposePortsForManualOperators(ports).map { _ =>
       Ok(s"Ports ${ports.mkString(", ")} exposed successfully for manual operators.")
     }.recover {
