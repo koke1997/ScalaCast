@@ -18,7 +18,7 @@ class WebhookController @Inject()(cc: ControllerComponents, webhookService: Webh
     }
   }
 
-  def getWebhookById(webhookId: String) = Action.async {
+  def getWebhookById(webhookId: String) = Action.async { implicit request: Request[AnyContent] =>
     webhookService.getWebhookById(webhookId).map {
       case Some(webhook) => Ok(Json.toJson(webhook))
       case None => NotFound(Json.obj("error" -> "Webhook not found"))
@@ -27,7 +27,7 @@ class WebhookController @Inject()(cc: ControllerComponents, webhookService: Webh
     }
   }
 
-  def deleteWebhook(webhookId: String) = Action.async {
+  def deleteWebhook(webhookId: String) = Action.async { implicit request: Request[AnyContent] =>
     webhookService.deleteWebhook(webhookId).map { _ =>
       NoContent
     }.recover {

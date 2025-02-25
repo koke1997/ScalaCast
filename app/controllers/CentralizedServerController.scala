@@ -14,8 +14,7 @@ class CentralizedServerController @Inject()(cc: ControllerComponents, centralize
     }
   }
 
-  def startServer() = Action.async { implicit request: Request[AnyContent] =>
-    val port = (request.body.asJson.get \ "port").as[Int]
+  def startServer(port: Int) = Action.async { implicit request: Request[AnyContent] =>
     centralizedServer.startServer(port).map { _ =>
       Ok("Server started")
     }.recover {

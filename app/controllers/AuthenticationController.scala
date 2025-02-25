@@ -8,21 +8,14 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class AuthenticationController @Inject()(cc: ControllerComponents, authService: AuthenticationService)(implicit ec: ExecutionContext) extends AbstractController(cc) {
 
-  def login: Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
-    val json = request.body.asJson.get
-    val username = (json \ "username").as[String]
-    val password = (json \ "password").as[String]
-
+  def login(username: String, password: String): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     authService.login(username, password).map {
       case Some(token) => Ok(token)
       case None => Unauthorized("Invalid credentials")
     }
   }
 
-  def refreshToken: Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
-    val json = request.body.asJson.get
-    val token = (json \ "token").as[String]
-
+  def refreshToken(token: String): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     authService.refreshToken(token).map {
       case Some(newToken) => Ok(newToken)
       case None => Unauthorized("Invalid token")
