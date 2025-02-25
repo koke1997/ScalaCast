@@ -1,9 +1,14 @@
-name := "scalacast"
-version := "0.1.0"
-scalaVersion := "2.13.16"
+name := "ScalaCast"
+version := "1.0-SNAPSHOT"
+
+lazy val root = (project in file(".")).enablePlugins(PlayScala)
+
+scalaVersion := "2.13.12"
+
+// Add JDK 21 settings
+javacOptions ++= Seq("-source", "17", "-target", "17")
 
 libraryDependencies ++= Seq(
-  "com.typesafe.akka" %% "akka-actor" % "2.6.19",
-  "com.typesafe.akka" %% "akka-stream" % "2.6.19",
-  "com.typesafe.akka" %% "akka-http" % "10.2.9"
+  guice,
+  "org.scalatestplus.play" %% "scalatestplus-play" % "6.0.0" % Test
 )
