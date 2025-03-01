@@ -2,18 +2,18 @@ package controllers
 
 import javax.inject._
 import play.api.mvc._
-import services.AnalyticsService
+import play.api.libs.json._
+import scala.concurrent.ExecutionContext
 
 @Singleton
-class AnalyticsController @Inject()(cc: ControllerComponents, analyticsService: AnalyticsService) extends AbstractController(cc) {
+class AnalyticsController @Inject()(cc: ControllerComponents)(implicit ec: ExecutionContext) 
+  extends AbstractController(cc) {
 
-  def getUsage(streamId: String) = Action { implicit request: Request[AnyContent] =>
-    val usageData = analyticsService.getUsage()
-    Ok(usageData)
+  def getUsage() = Action {
+    Ok(Json.obj("usage" -> "analytics data"))
   }
 
-  def getPerformance(streamId: String) = Action { implicit request: Request[AnyContent] =>
-    val performanceData = analyticsService.getPerformance()
-    Ok(performanceData)
+  def getPerformance() = Action {
+    Ok(Json.obj("performance" -> "metrics data"))
   }
 }

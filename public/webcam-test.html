@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ScalaCast WebRTC Demo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        video { width: 100%; background-color: #000; }
+        .videos { display: flex; flex-direction: column; gap: 10px; }
+        .video-container { margin-bottom: 10px; }
+        button { padding: 10px; margin: 5px; cursor: pointer; font-size: 16px; }
+        @media (min-width: 768px) {
+            .videos { flex-direction: row; }
+            .video-container { flex: 1; }
+        }
+        .status { color: #4CAF50; margin: 10px 0; }
+        .error { color: #F44336; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <h1>ScalaCast WebRTC Demo</h1>
+    
+    <div class="videos">
+        <div class="video-container">
+            <h3>Local Camera</h3>
+            <video id="localVideo" autoplay muted playsinline></video>
+        </div>
+        <div class="video-container">
+            <h3>Remote Camera</h3>
+            <video id="remoteVideo" autoplay playsinline></video>
+        </div>
+    </div>
+    
+    <div>
+        <button id="startButton">Start Camera</button>
+        <button id="connectButton" disabled>Connect</button>
+        <button id="switchCameraButton" disabled>Switch Camera</button>
+    </div>
+    
+    <div id="status" class="status"></div>
+    <div id="error" class="error"></div>
+    
+    <script>
+        // Global variables
+        let localStream;
+        let peerConnection;
+        let socket;
+        let videoDevices = [];
+        let currentDeviceIndex = 0;
+        
+        // DOM elements
+        const localVideo = document.getElementById('localVideo');
+        const remoteVideo = document.getElementById('remoteVideo');
+        const startButton = document.getElementById('startButton');
+        const connectButton = document.getElementById('connectButton');
+        const switchCameraButton = document.getElementById('switchCameraButton');
+        const statusDiv = document.getElementById('status');
+        const errorDiv = document.getElementById('error');
+        
+        function showStatus(message) {
+            statusDiv.textContent = message;
+            console.log(message);
+        }
+        
+        function showError(message) {
+            errorDiv.textContent = message;
+            console.error(message);
+        }
+        
+        // WebSocket connection
+        function connectWebSocket() {
+            try {
+                // Use window.location.host to get correct host:port
+                socket = new WebSocket(`ws://${window.location.host}/ws/video-stream`);
+                
+                socket.onopen = () => {
+                    showStatus('WebSocket connected');
+                    connectButton.disabled = false;
+                };
+                
+                socket.onmessage = async (event) => {
+                    try {
+                        const message = JSON.parse(event.data);
+                        
+                        if (message.type === 'offer') {
+                            await handleOffer(message);
+                        } else if (message.type === 'answer') {
+                            await handleAnswer(message);
+                        } else if (message.type === 'candidate') {
+                            await handleCandidate(message);
+                        }
+                    } catch (error) {
+                        showError(`Error processing message: ${error.message}`);
+                    }
+                };
+                
+                socket.onclose = () => {
+                    showStatus('WebSocket closed');
+                    connectButton.disabled = true;
+                };
+                
+                socket.onerror = (error) => {
+                    showError(`WebSocket error: ${error}`);
+                    connectButton.disabled = true;
+                };
+            } catch (error) {
+                showError(`Error connecting to WebSocket: ${error.message}`);
+            }
+        }
+        
+        // Check if media devices are supported
+        function checkMediaDevicesSupport() {
+            if (!navigator.mediaDevices) {
+                showError('MediaDevices API not supported in this browser');
+                return false;
+            }
+            return true;
+        }
+        
+        // Start camera (simplified for mobile compatibility)
+        async function startCamera() {
+            try {
+                if (!checkMediaDevicesSupport()) return;
+                
+                showStatus('Requesting camera access...');
+                
+                // Basic getUserMedia call - works on more browsers
+                localStream = await navigator.mediaDevices.getUserMedia({
+                    video: true,
+                    audio: true
+                });
+                
+                // Display local video
+                localVideo.srcObject = localStream;
+                showStatus('Camera started successfully');
+                
+                // Enable buttons
+                connectButton.disabled = false;
+                startButton.disabled = true;
+                
+                // Try to get device list if supported
+                try {
+                    const devices = await navigator.mediaDevices.enumerateDevices();
+                    videoDevices = devices.filter(device => device.kind === 'videoinput');
+                    switchCameraButton.disabled = videoDevices.length <= 1;
+                    
+                    if (videoDevices.length > 0) {
+                        showStatus(`Found ${videoDevices.length} video devices`);
+                    }
+                } catch (enumError) {
+                    // Just continue even if we can't enumerate devices
+                    console.warn('Could not enumerate devices:', enumError);
+                    switchCameraButton.disabled = true;
+                }
+                
+                // Connect WebSocket
+                connectWebSocket();
+                
+            } catch (error) {
+                showError(`Error starting camera: ${error.message}`);
+                console.error('Full error:', error);
+            }
+        }
+        
+        // Switch camera (if multiple cameras available)
+        async function switchCamera() {
+            if (!checkMediaDevicesSupport()) return;
+            
+            try {
+                if (videoDevices.length <= 1) {
+                    showStatus('No additional cameras found');
+                    return;
+                }
+                
+                // Stop current tracks
+                if (localStream) {
+                    localStream.getTracks().forEach(track => track.stop());
+                }
+                
+                // Switch to next device
+                currentDeviceIndex = (currentDeviceIndex + 1) % videoDevices.length;
+                showStatus(`Switching to camera ${currentDeviceIndex + 1}/${videoDevices.length}`);
+                
+                // Start new stream
+                localStream = await navigator.mediaDevices.getUserMedia({
+                    video: { deviceId: videoDevices[currentDeviceIndex].deviceId },
+                    audio: true
+                });
+                
+                // Update local video
+                localVideo.srcObject = localStream;
+                
+                // If connected, replace tracks
+                if (peerConnection) {
+                    const videoTrack = localStream.getVideoTracks()[0];
+                    const sender = peerConnection.getSenders().find(s => 
+                        s.track && s.track.kind === 'video'
+                    );
+                    if (sender) {
+                        sender.replaceTrack(videoTrack);
+                    }
+                }
+                
+                showStatus(`Switched to camera ${currentDeviceIndex + 1}`);
+            } catch (error) {
+                showError(`Error switching camera: ${error.message}`);
+            }
+        }
+        
+        // Initialize WebRTC peer connection
+        function createPeerConnection() {
+            showStatus('Creating peer connection...');
+            
+            const configuration = {
+                iceServers: [
+                    { urls: 'stun:stun.l.google.com:19302' }
+                ]
+            };
+            
+            try {
+                peerConnection = new RTCPeerConnection(configuration);
+                
+                // Add local stream
+                if (localStream) {
+                    localStream.getTracks().forEach(track => {
+                        peerConnection.addTrack(track, localStream);
+                    });
+                }
+                
+                // Handle ICE candidates
+                peerConnection.onicecandidate = (event) => {
+                    if (event.candidate) {
+                        try {
+                            socket.send(JSON.stringify({
+                                type: 'candidate',
+                                candidate: event.candidate
+                            }));
+                        } catch (error) {
+                            showError(`Error sending ICE candidate: ${error.message}`);
+                        }
+                    }
+                };
+                
+                // Handle connection state changes
+                peerConnection.onconnectionstatechange = () => {
+                    showStatus(`Connection state: ${peerConnection.connectionState}`);
+                };
+                
+                // Handle remote stream
+                peerConnection.ontrack = (event) => {
+                    showStatus('Received remote track');
+                    if (event.streams && event.streams[0]) {
+                        remoteVideo.srcObject = event.streams[0];
+                    }
+                };
+                
+                showStatus('Peer connection created');
+                return peerConnection;
+            } catch (error) {
+                showError(`Error creating peer connection: ${error.message}`);
+                throw error;
+            }
+        }
+        
+        // Initiate connection (create offer)
+        async function connect() {
+            if (!localStream) {
+                showError('Please start your camera first');
+                return;
+            }
+            
+            try {
+                showStatus('Initiating connection...');
+                peerConnection = createPeerConnection();
+                
+                // Create offer
+                const offer = await peerConnection.createOffer();
+                await peerConnection.setLocalDescription(offer);
+                showStatus('Created offer, sending...');
+                
+                // Send offer
+                socket.send(JSON.stringify({
+                    type: 'offer',
+                    sdp: offer
+                }));
+            } catch (error) {
+                showError(`Error creating offer: ${error.message}`);
+            }
+        }
+        
+        // Handle incoming offer
+        async function handleOffer(offer) {
+            if (!localStream) {
+                showError('Please start your camera first');
+                return;
+            }
+            
+            try {
+                showStatus('Received offer, creating answer...');
+                peerConnection = createPeerConnection();
+                
+                // Set remote description
+                await peerConnection.setRemoteDescription(new RTCSessionDescription(offer.sdp));
+                
+                // Create answer
+                const answer = await peerConnection.createAnswer();
+                await peerConnection.setLocalDescription(answer);
+                showStatus('Created answer, sending...');
+                
+                // Send answer
+                socket.send(JSON.stringify({
+                    type: 'answer',
+                    sdp: answer
+                }));
+            } catch (error) {
+                showError(`Error handling offer: ${error.message}`);
+            }
+        }
+        
+        // Handle incoming answer
+        async function handleAnswer(answer) {
+            try {
+                showStatus('Received answer');
+                await peerConnection.setRemoteDescription(new RTCSessionDescription(answer.sdp));
+                showStatus('Connection established');
+            } catch (error) {
+                showError(`Error handling answer: ${error.message}`);
+            }
+        }
+        
+        // Handle incoming ICE candidate
+        async function handleCandidate(candidate) {
+            try {
+                showStatus('Received ICE candidate');
+                await peerConnection.addIceCandidate(new RTCIceCandidate(candidate.candidate));
+            } catch (error) {
+                showError(`Error adding ICE candidate: ${error.message}`);
+            }
+        }
+        
+        // Initialize
+        startButton.addEventListener('click', startCamera);
+        connectButton.addEventListener('click', connect);
+        switchCameraButton.addEventListener('click', switchCamera);
+        
+        // Initial status
+        showStatus('Ready - click "Start Camera" to begin');
+    </script>
+</body>
+</html>

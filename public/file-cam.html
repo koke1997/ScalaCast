@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Camera via File Input</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        img { width: 100%; max-height: 50vh; object-fit: contain; background: #eee; display: block; margin: 10px 0; }
+        button, input { padding: 15px; margin: 10px 0; font-size: 18px; width: 100%; }
+        #info { margin: 20px 0; font-size: 14px; word-break: break-all; }
+        .instructions { background: #f8f9fa; padding: 15px; border-left: 4px solid #2196F3; margin: 20px 0; }
+    </style>
+</head>
+<body>
+    <h2>Camera via File Input</h2>
+    
+    <div class="instructions">
+        <p>Since your browser doesn't support direct camera access, we'll use the file input method:</p>
+        <ol>
+            <li>Click "Take Photo" to open your camera</li>
+            <li>Take a picture</li>
+            <li>Confirm the picture</li>
+            <li>Click "Upload Photo" to send it</li>
+        </ol>
+    </div>
+    
+    <input type="file" id="cameraInput" accept="image/*" capture="camera">
+    <button id="uploadButton" disabled>Upload Photo</button>
+    
+    <img id="preview" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="Preview">
+    
+    <div id="status"></div>
+    
+    <script>
+        // DOM elements
+        const cameraInput = document.getElementById('cameraInput');
+        const uploadButton = document.getElementById('uploadButton');
+        const preview = document.getElementById('preview');
+        const status = document.getElementById('status');
+        
+        // Show image preview when photo is taken
+        cameraInput.addEventListener('change', function(e) {
+            if (e.target.files.length > 0) {
+                const file = e.target.files[0];
+                const url = URL.createObjectURL(file);
+                preview.src = url;
+                uploadButton.disabled = false;
+                status.textContent = 'Photo ready to upload';
+            }
+        });
+        
+        // Handle upload
+        uploadButton.addEventListener('click', function() {
+            if (!cameraInput.files.length) return;
+            
+            const file = cameraInput.files[0];
+            status.textContent = 'Uploading photo...';
+            
+            // Create FormData
+            const formData = new FormData();
+            formData.append('image', file);
+            
+            // Send to server
+            fetch('/api/v1/upload-image', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                status.textContent = `Upload successful! Image ID: ${data.imageId}`;
+            })
+            .catch(error => {
+                status.textContent = 'Error uploading: ' + error.message;
+                console.error('Upload error:', error);
+            });
+        });
+    </script>
+</body>
+</html>

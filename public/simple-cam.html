@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple Camera Test</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        video { width: 100%; background-color: #000; max-height: 50vh; }
+        button { padding: 15px; margin: 10px 0; font-size: 18px; width: 100%; }
+        #info { margin: 20px 0; font-size: 14px; word-break: break-all; }
+        #status { color: #2196F3; }
+        #error { color: #F44336; }
+    </style>
+</head>
+<body>
+    <h2>Simple Camera Test</h2>
+    
+    <video id="video" autoplay playsinline muted></video>
+    
+    <button id="startButton">Start Camera</button>
+    
+    <div id="status"></div>
+    <div id="error"></div>
+    
+    <div id="info"></div>
+    
+    <script>
+        // DOM elements
+        const video = document.getElementById('video');
+        const startButton = document.getElementById('startButton');
+        const statusDiv = document.getElementById('status');
+        const errorDiv = document.getElementById('error');
+        const infoDiv = document.getElementById('info');
+        
+        // Show messages
+        function showStatus(msg) {
+            statusDiv.textContent = msg;
+            console.log(msg);
+        }
+        
+        function showError(msg) {
+            errorDiv.textContent = msg;
+            console.error(msg);
+        }
+        
+        // Gather browser information
+        function showBrowserInfo() {
+            const info = {
+                userAgent: navigator.userAgent,
+                vendor: navigator.vendor,
+                platform: navigator.platform,
+                mediaDevices: !!navigator.mediaDevices,
+                getUserMedia: !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia),
+                legacyGetUserMedia: !!(navigator.getUserMedia || navigator.webkitGetUserMedia || 
+                                      navigator.mozGetUserMedia || navigator.msGetUserMedia)
+            };
+            
+            infoDiv.innerHTML = '<h3>Browser Info:</h3><pre>' + 
+                               JSON.stringify(info, null, 2) + '</pre>';
+        }
+        
+        // Legacy getUserMedia
+        function getLegacyUserMedia(constraints, success, error) {
+            const getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia ||
+                                navigator.mozGetUserMedia || navigator.msGetUserMedia;
+                                
+            if (getUserMedia) {
+                getUserMedia.call(navigator, constraints, success, error);
+                return true;
+            }
+            return false;
+        }
+        
+        // Start camera using all possible methods
+        async function startCamera() {
+            showStatus('Starting camera...');
+            
+            try {
+                // Method 1: Modern API
+                if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                    showStatus('Using modern getUserMedia');
+                    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                    video.srcObject = stream;
+                    showStatus('Camera started successfully');
+                    return;
+                }
+                
+                // Method 2: Legacy API
+                if (getLegacyUserMedia(
+                    { video: true },
+                    function(stream) {
+                        if ('srcObject' in video) {
+                            video.srcObject = stream;
+                        } else {
+                            // Older browsers
+                            video.src = window.URL.createObjectURL(stream);
+                        }
+                        showStatus('Camera started with legacy API');
+                    },
+                    function(err) {
+                        showError('Legacy getUserMedia error: ' + err);
+                    }
+                )) {
+                    return;
+                }
+                
+                // No methods worked
+                showError('getUserMedia not supported in this browser');
+                
+            } catch (err) {
+                showError('Error accessing camera: ' + err.message);
+                console.error(err);
+            }
+        }
+        
+        // Initialize
+        startButton.addEventListener('click', startCamera);
+        showBrowserInfo();
+        showStatus('Ready - click "Start Camera" to begin');
+    </script>
+</body>
+</html>

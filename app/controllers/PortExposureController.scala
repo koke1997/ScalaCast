@@ -2,72 +2,49 @@ package controllers
 
 import javax.inject._
 import play.api.mvc._
+import play.api.libs.json._
 import services.PortExposureService
-import scala.concurrent.{ExecutionContext, Future}
-import play.api.libs.json.JsObject
+import scala.concurrent.{Future, ExecutionContext}
 
 @Singleton
-class PortExposureController @Inject()(cc: ControllerComponents, portExposureService: PortExposureService)(implicit ec: ExecutionContext) extends AbstractController(cc) {
-
-  def index() = Action.async { implicit request: Request[AnyContent] =>
-    Future.successful(Ok("Port Exposure Controller"))
+class PortExposureController @Inject()(cc: ControllerComponents, portExposureService: PortExposureService)
+  (implicit ec: ExecutionContext) extends AbstractController(cc) {
+  
+  def index() = Action {
+    Ok("Port Exposure Service")
   }
-
-  def exposePort(port: Int) = Action.async(parse.json) { implicit request: Request[AnyContent] =>
-    portExposureService.exposePort(port).map { _ =>
-      Ok(s"Port $port exposed successfully.")
-    }.recover {
-      case ex: Exception => InternalServerError(s"Error exposing port $port: ${ex.getMessage}")
-    }
+  
+  def exposePort() = Action.async(parse.json) { implicit request =>
+    (request.body \ "port").asOpt[Int].map { port =>
+      portExposureService.exposePort(port).map(_ => Ok)
+    }.getOrElse(Future.successful(BadRequest("Port required")))
   }
-
-  def closePort(port: Int) = Action.async(parse.json) { implicit request: Request[AnyContent] =>
-    portExposureService.closePort(port).map { _ =>
-      Ok(s"Port $port closed successfully.")
-    }.recover {
-      case ex: Exception => InternalServerError(s"Error closing port $port: ${ex.getMessage}")
-    }
+  
+  def closePort() = Action.async(parse.json) { implicit request =>
+    (request.body \ "port").asOpt[Int].map { port =>
+      portExposureService.closePort(port).map(_ => Ok)
+    }.getOrElse(Future.successful(BadRequest("Port required")))
   }
-
-  def exposePortsForEndUsers(ports: List[Int]) = Action.async(parse.json) { implicit request: Request[AnyContent] =>
-    portExposureService.exposePortsForEndUsers(ports).map { _ =>
-      Ok(s"Ports ${ports.mkString(", ")} exposed successfully for end users.")
-    }.recover {
-      case ex: Exception => InternalServerError(s"Error exposing ports for end users: ${ex.getMessage}")
-    }
+  
+  def exposePortsForEndUsers() = Action.async(parse.json) { implicit request =>
+    (request.body \ "ports").asOpt[List[Int]].map { ports =>
+      portExposureService.exposePortsForEndUsers(ports).map(_ => Ok)
+    }.getOrElse(Future.successful(BadRequest("Ports required")))
   }
-
-  def exposePortsForManualOperators(ports: List[Int]) = Action.async(parse.json) { implicit request: Request[AnyContent] =>
-    portExposureService.exposePortsForManualOperators(ports).map { _ =>
-      Ok(s"Ports ${ports.mkString(", ")} exposed successfully for manual operators.")
-    }.recover {
-      case ex: Exception => InternalServerError(s"Error exposing ports for manual operators: ${ex.getMessage}")
-    }
+  
+  def exposePortsForManualOperators() = Action.async(parse.json) { implicit request =>
+    (request.body \ "ports").asOpt[List[Int]].map { ports =>
+      portExposureService.exposePortsForManualOperators(ports).map(_ => Ok)
+    }.getOrElse(Future.successful(BadRequest("Ports required")))
   }
-
-  def closeAllPorts() = Action.async { implicit request: Request[AnyContent] =>
-    portExposureService.closeAllPorts().map { _ =>
-      Ok("All ports closed successfully.")
-    }.recover {
-      case ex: Exception => InternalServerError(s"Error closing all ports: ${ex.getMessage}")
-    }
+  
+  def closeAllPorts() = Action.async {
+    portExposureService.closeAllPorts().map(_ => Ok)
   }
-
-  def batch() = Action.async(parse.json) { implicit request: Request[AnyContent] =>
-    val operations = (request.body \ "operations").as[List[JsObject]]
-    val futures = operations.map { operation =>
-      val action = (operation \ "action").as[String]
-      val port = (operation \ "port").as[Int]
-      action match {
-        case "expose" => portExposureService.exposePort(port)
-        case "close" => portExposureService.closePort(port)
-        case _ => Future.failed(new IllegalArgumentException(s"Unknown action: $action"))
-      }
-    }
-    Future.sequence(futures).map { _ =>
-      Ok("Batch operations completed successfully.")
-    }.recover {
-      case ex: Exception => InternalServerError(s"Error performing batch operations: ${ex.getMessage}")
-    }
+  
+  def batch() = Action.async(parse.json) { implicit request =>
+    (request.body \ "operations").asOpt[List[JsObject]].map { operations =>
+      portExposureService.batch(operations).map(_ => Ok)
+    }.getOrElse(Future.successful(BadRequest("Operations required")))
   }
 }

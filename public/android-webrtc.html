@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Android WebRTC Test</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        video { width: 100%; background-color: #000; max-height: 50vh; }
+        button { padding: 15px; margin: 10px 0; font-size: 18px; width: 100%; }
+        #status { color: #2196F3; }
+        #error { color: #F44336; }
+    </style>
+</head>
+<body>
+    <h2>Android WebRTC Test</h2>
+    
+    <video id="video" autoplay playsinline muted></video>
+    <button id="startButton">Start Camera</button>
+    <div id="status"></div>
+    <div id="error"></div>
+    
+    <script>
+        // Global variables
+        const video = document.getElementById('video');
+        const startButton = document.getElementById('startButton');
+        const statusDiv = document.getElementById('status');
+        const errorDiv = document.getElementById('error');
+        
+        function log(msg) {
+            statusDiv.innerHTML += msg + '<br>';
+            console.log(msg);
+        }
+        
+        function error(msg) {
+            errorDiv.innerHTML += msg + '<br>';
+            console.error(msg);
+        }
+        
+        // Check browser capabilities
+        window.onload = function() {
+            log('Checking browser capabilities...');
+            
+            // Check for basic WebRTC support
+            if (!window.RTCPeerConnection) {
+                error('RTCPeerConnection not supported');
+            } else {
+                log('RTCPeerConnection supported ✓');
+            }
+            
+            // Check different camera access methods
+            if (navigator.mediaDevices) {
+                log('mediaDevices supported ✓');
+            } else {
+                error('mediaDevices not supported');
+                
+                // Add polyfill for older browsers
+                navigator.mediaDevices = {};
+            }
+            
+            if (!navigator.mediaDevices.getUserMedia) {
+                navigator.mediaDevices.getUserMedia = function(constraints) {
+                    const getUserMedia = navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+                    
+                    if (!getUserMedia) {
+                        error('getUserMedia not supported');
+                        return Promise.reject(new Error('getUserMedia is not supported'));
+                    }
+                    
+                    return new Promise(function(resolve, reject) {
+                        getUserMedia.call(navigator, constraints, resolve, reject);
+                    });
+                }
+                log('Applied getUserMedia polyfill');
+            } else {
+                log('getUserMedia supported ✓');
+            }
+        };
+        
+        // Start camera
+        startButton.addEventListener('click', async function() {
+            try {
+                log('Requesting camera access...');
+                
+                const stream = await navigator.mediaDevices.getUserMedia({
+                    video: {
+                        facingMode: 'environment', // Use back camera
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 }
+                    },
+                    audio: false
+                });
+                
+                video.srcObject = stream;
+                log('Camera started successfully ✓');
+            } catch (err) {
+                error(`Camera error: ${err.name} - ${err.message}`);
+                
+                // Try fallback with minimal constraints
+                try {
+                    log('Trying fallback method...');
+                    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                    video.srcObject = stream;
+                    log('Camera started with fallback ✓');
+                } catch (fallbackErr) {
+                    error(`Fallback failed: ${fallbackErr.message}`);
+                }
+            }
+        });
+    </script>
+</body>
+</html>

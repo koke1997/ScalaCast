@@ -1,29 +1,29 @@
 package filters
 
 import javax.inject._
-import play.api.mvc._
 import play.api.http.HttpErrorHandler
-import play.api.libs.json.Json
-import scala.concurrent._
+import play.api.mvc._
+import play.api.libs.json._
+import scala.concurrent.Future
+import play.api.mvc.Results._
 
 @Singleton
-class ErrorHandler @Inject()(implicit ec: ExecutionContext) extends HttpErrorHandler {
-
+class ErrorHandler @Inject()() extends HttpErrorHandler {
+  
   def onClientError(request: RequestHeader, statusCode: Int, message: String): Future[Result] = {
-    Future.successful {
+    Future.successful(
       Status(statusCode)(Json.obj(
-        "status" -> statusCode,
-        "error" -> message
+        "error" -> message,
+        "status" -> statusCode
       ))
-    }
+    )
   }
-
+  
   def onServerError(request: RequestHeader, exception: Throwable): Future[Result] = {
-    Future.successful {
+    Future.successful(
       InternalServerError(Json.obj(
-        "status" -> 500,
-        "error" -> "A server error occurred: " + exception.getMessage
+        "error" -> s"A server error occurred: ${exception.getMessage}"
       ))
-    }
+    )
   }
 }

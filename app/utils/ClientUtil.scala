@@ -1,19 +1,17 @@
 package utils
 
 import javax.inject._
-import scala.concurrent.{ExecutionContext, Future}
-import services.Client
+import scala.concurrent.{Future, ExecutionContext}
+import models.Client
 
 @Singleton
 class ClientUtil @Inject()(implicit ec: ExecutionContext) {
-
+  
   def getClient(clientId: String): Future[Option[Client]] = {
-    // Add logic to retrieve a client by ID
-    Future.successful(None) // Placeholder implementation
+    Future.successful(Some(Client(clientId, s"Client $clientId", s"client$clientId@example.com", "active")))
   }
-
+  
   def updateClient(clientId: String, client: Client): Future[Boolean] = {
-    // Add logic to update a client
-    Future.successful(false) // Placeholder implementation
+    Future.successful(true)
   }
 }

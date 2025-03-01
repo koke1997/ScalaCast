@@ -1,0 +1,14 @@
+@()
+
+@main("WebRTC Demo") {
+  <div class="container">
+    <h1>ScalaCast WebRTC Demo</h1>
+    <p>To test with multiple devices:</p>
+    <ul>
+      <li>Use this URL on both devices: <strong>http://@{java.net.InetAddress.getLocalHost.getHostAddress}:9000/webrtc/test</strong></li>
+      <li>Click "Start Camera" on both devices</li>
+      <li>Click "Connect" on one device to initiate the connection</li>
+    </ul>
+    <p><a href="/webrtc/test" class="btn btn-primary">Open Test Page</a></p>
+  </div>
+}

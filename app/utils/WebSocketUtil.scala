@@ -7,10 +7,10 @@ import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.ws.{Message, TextMessage}
 import akka.http.scaladsl.server.Directives._
 import akka.stream.scaladsl.Flow
-import scala.concurrent.Future
+import scala.concurrent.{Future, ExecutionContext}
 
 @Singleton
-class WebSocketUtil @Inject()(implicit system: ActorSystem, mat: Materializer) {
+class WebSocketUtil @Inject()(implicit system: ActorSystem, mat: Materializer, ec: ExecutionContext) {
 
   def startWebSocket(interface: String, port: Int): Future[Http.ServerBinding] = {
     val route = path("ws" / "video-stream") {
@@ -20,7 +20,7 @@ class WebSocketUtil @Inject()(implicit system: ActorSystem, mat: Materializer) {
   }
 
   def stopWebSocket(binding: Future[Http.ServerBinding]): Future[Unit] = {
-    binding.flatMap(_.unbind())
+    binding.flatMap(b => b.unbind().map(_ => ()))
   }
 
   private def webSocketFlow: Flow[Message, Message, Any] = {
@@ -30,5 +30,17 @@ class WebSocketUtil @Inject()(implicit system: ActorSystem, mat: Materializer) {
       case _ =>
         TextMessage.Strict("Unsupported message type")
     }
+  }
+}
+
+object WebSocketUtil {
+  def startWebSocketServer(interface: String, port: Int)
+      (implicit system: akka.actor.ActorSystem, ec: ExecutionContext): Future[Http.ServerBinding] = {
+    Http().newServerAt(interface, port).bind(_ => ???)
+  }
+  
+  def stopWebSocketServer(binding: Http.ServerBinding)
+      (implicit ec: ExecutionContext): Future[Unit] = {
+    binding.unbind().map(_ => ())
   }
 }

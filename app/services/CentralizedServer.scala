@@ -77,4 +77,6 @@ class CentralizedServer @Inject()(implicit ec: ExecutionContext) {
       Future.failed(new Exception("Failed to start server after 3 attempts"))
     }
   }
+
+  def getStatus: Future[String] = Future.successful("Running")
 }

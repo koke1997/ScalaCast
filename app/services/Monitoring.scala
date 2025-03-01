@@ -1,9 +1,11 @@
 package services
 
+import javax.inject._
 import scala.concurrent.{Future, ExecutionContext}
 import scala.sys.process._
 import scala.util.{Success, Failure}
 
+@Singleton
 class MonitoringService @Inject()(implicit ec: ExecutionContext) {
 
   def monitorCPU(): Future[Unit] = Future {

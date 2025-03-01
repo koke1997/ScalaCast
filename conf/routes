@@ -1,69 +1,57 @@
 # Routes
 # This file defines all application routes (Higher priority routes first)
-# ~~~~
 
 # Home page
-GET     /                           controllers.HomeController.index
+GET     /                           controllers.HomeController.index()
 
 # Centralized Server
-GET     /api/v1/centralized-server         controllers.CentralizedServerController.index
-POST    /api/v1/centralized-server         controllers.CentralizedServerController.startServer
-DELETE  /api/v1/centralized-server         controllers.CentralizedServerController.stopServer
+GET     /api/v1/centralized-server         controllers.CentralizedServerController.index()
+POST    /api/v1/centralized-server         controllers.CentralizedServerController.startServer()
+DELETE  /api/v1/centralized-server         controllers.CentralizedServerController.stopServer()
 
 # Fault Tolerance
-GET     /api/v1/fault-tolerance            controllers.FaultToleranceController.index
-POST    /api/v1/fault-tolerance/start      controllers.FaultToleranceController.start
-POST    /api/v1/fault-tolerance/stop       controllers.FaultToleranceController.stop
+GET     /api/v1/fault-tolerance            controllers.FaultToleranceController.index()
+POST    /api/v1/fault-tolerance/start      controllers.FaultToleranceController.start()
+POST    /api/v1/fault-tolerance/stop       controllers.FaultToleranceController.stop()
 
 # Frontend Interface
-GET     /api/v1/frontend-interface         controllers.FrontendInterfaceController.index
-POST    /api/v1/frontend-interface/manage-options    controllers.FrontendInterfaceController.manageOptions
-POST    /api/v1/frontend-interface/manage-monitorings controllers.FrontendInterfaceController.manageMonitorings
-POST    /api/v1/frontend-interface/manage-scripts    controllers.FrontendInterfaceController.manageScripts
+GET     /api/v1/frontend-interface         controllers.FrontendInterfaceController.index()
+POST    /api/v1/frontend-interface/manage-options    controllers.FrontendInterfaceController.manageOptions()
+POST    /api/v1/frontend-interface/manage-monitorings controllers.FrontendInterfaceController.manageMonitorings()
+POST    /api/v1/frontend-interface/manage-scripts    controllers.FrontendInterfaceController.manageScripts()
 
 # Monitoring
-GET     /api/v1/monitoring                 controllers.MonitoringController.index
-POST    /api/v1/monitoring/cpu             controllers.MonitoringController.monitorCPU
-POST    /api/v1/monitoring/memory          controllers.MonitoringController.monitorMemory
-POST    /api/v1/monitoring/logs            controllers.MonitoringController.monitorLogs
-POST    /api/v1/monitoring/restart         controllers.MonitoringController.restartService
+GET     /api/v1/monitoring                 controllers.MonitoringController.index()
+POST    /api/v1/monitoring/cpu             controllers.MonitoringController.monitorCPU()
+POST    /api/v1/monitoring/memory          controllers.MonitoringController.monitorMemory()
+POST    /api/v1/monitoring/logs            controllers.MonitoringController.monitorLogs()
+POST    /api/v1/monitoring/restart         controllers.MonitoringController.restartService()
 
 # Peer Discovery
-GET     /api/v1/peer-discovery             controllers.PeerDiscoveryController.index
-POST    /api/v1/peer-discovery/start       controllers.PeerDiscoveryController.start
-POST    /api/v1/peer-discovery/stop        controllers.PeerDiscoveryController.stop
-POST    /api/v1/peer-discovery/handle      controllers.PeerDiscoveryController.handleMessage
-POST    /api/v1/peer-discovery/broadcast   controllers.PeerDiscoveryController.broadcastMessage
+GET     /api/v1/peer-discovery             controllers.PeerDiscoveryController.index()
+POST    /api/v1/peer-discovery/start       controllers.PeerDiscoveryController.start()
+POST    /api/v1/peer-discovery/stop        controllers.PeerDiscoveryController.stop()
+POST    /api/v1/peer-discovery/handle      controllers.PeerDiscoveryController.handleMessage()
+POST    /api/v1/peer-discovery/broadcast   controllers.PeerDiscoveryController.broadcastMessage()
 
 # Port Exposure
-GET     /api/v1/port-exposure              controllers.PortExposureController.index
-POST    /api/v1/port-exposure/expose       controllers.PortExposureController.exposePort
-POST    /api/v1/port-exposure/close        controllers.PortExposureController.closePort
-POST    /api/v1/port-exposure/expose-end-users controllers.PortExposureController.exposePortsForEndUsers
-POST    /api/v1/port-exposure/expose-manual-operators controllers.PortExposureController.exposePortsForManualOperators
-POST    /api/v1/port-exposure/close-all    controllers.PortExposureController.closeAllPorts
-POST    /api/v1/port-exposure/batch        controllers.PortExposureController.batch
+GET     /api/v1/port-exposure              controllers.PortExposureController.index()
+POST    /api/v1/port-exposure/expose       controllers.PortExposureController.exposePort()
+POST    /api/v1/port-exposure/expose-end-users controllers.PortExposureController.exposePortsForEndUsers()
+POST    /api/v1/port-exposure/expose-manual-operators controllers.PortExposureController.exposePortsForManualOperators()
 
 # Reliable Transmission
-GET     /api/v1/reliable-transmission      controllers.ReliableTransmissionController.index
-POST    /api/v1/reliable-transmission/send controllers.ReliableTransmissionController.sendData
-POST    /api/v1/reliable-transmission/receive controllers.ReliableTransmissionController.receiveData
+GET     /api/v1/reliable-transmission      controllers.ReliableTransmissionController.index()
 
 # SSL Configuration
-GET     /api/v1/ssl-configuration          controllers.SSLConfigurationController.index
-POST    /api/v1/ssl-configuration/load-keystore controllers.SSLConfigurationController.loadKeyStore
-POST    /api/v1/ssl-configuration/create-ssl-context controllers.SSLConfigurationController.createSSLContext
-POST    /api/v1/ssl-configuration/apply-ssl-context controllers.SSLConfigurationController.applySSLContext
+GET     /api/v1/ssl-configuration          controllers.SSLConfigurationController.index()
 
 # Video Streaming
-GET     /api/v1/video-streaming            controllers.VideoStreamingController.index
-POST    /api/v1/video-streaming/start-adaptive-bitrate controllers.VideoStreamingController.startAdaptiveBitrateStreaming
-POST    /api/v1/video-streaming/start-subtitle-support controllers.VideoStreamingController.startSubtitleSupport
-GET     /api/v1/video-streaming/status/:streamId controllers.StreamingStatusController.getStatus
+GET     /api/v1/video-streaming            controllers.VideoStreamingController.index()
 
 # Authentication
-POST    /auth/login                        controllers.AuthenticationController.login
-POST    /auth/refresh-token                controllers.AuthenticationController.refreshToken
+POST    /auth/login                        controllers.AuthenticationController.login()
+POST    /auth/refresh-token                controllers.AuthenticationController.refreshToken()
 
 # Health Check
 GET     /health                            controllers.HealthCheckController.health
@@ -78,19 +66,36 @@ POST    /config/streaming-quality          controllers.ConfigurationController.u
 
 # Client Management
 GET     /clients                           controllers.ClientManagementController.getClients
-GET     /clients/:clientId                 controllers.ClientManagementController.getClientById
+GET     /clients/:clientId                 controllers.ClientManagementController.getClientById(clientId: String)
 
 # Analytics
-GET     /analytics/usage                   controllers.AnalyticsController.getUsage
-GET     /analytics/performance             controllers.AnalyticsController.getPerformance
+GET     /analytics/usage                   controllers.AnalyticsController.getUsage()
+GET     /analytics/performance             controllers.AnalyticsController.getPerformance()
 
 # Documentation
-GET     /api-docs                          controllers.DocumentationController.getApiDocs
+GET     /api-docs                          controllers.DocumentationController.getApiDocs()
 
 # Webhook Configuration
-POST    /webhooks                          controllers.WebhookController.createWebhook
-GET     /webhooks/:webhookId               controllers.WebhookController.getWebhookById
-DELETE  /webhooks/:webhookId               controllers.WebhookController.deleteWebhook
+POST    /webhooks                          controllers.WebhookController.createWebhook()
+GET     /webhooks/:webhookId               controllers.WebhookController.getWebhookById(webhookId: String)
+DELETE  /webhooks/:webhookId               controllers.WebhookController.deleteWebhook(webhookId: String)
+
+# WebRTC testing
+GET     /webrtc                        controllers.WebRTCController.index()
+GET     /webrtc/test                   controllers.WebRTCController.test()
+# Simple camera test
+GET     /simple-cam                    controllers.WebRTCController.simpleCam()
+# File camera approach
+GET     /file-cam                     controllers.WebRTCController.fileCam()
+# Android WebRTC Test
+GET     /android-webrtc               controllers.WebRTCController.androidWebRTC()
+
+# Image upload
+POST    /api/v1/upload-image          controllers.UploadController.uploadImage
 
 # Static file serving
 GET     /public/*file                      controllers.Assets.at(path="/public", file)
+GET     /assets/*file                      controllers.Assets.versioned(path="/public", file: Asset)
+
+# HTTPS redirect
+GET     /*path                         controllers.HttpsRedirectController.redirect(path)

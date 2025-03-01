@@ -1,9 +1,12 @@
 package services
 
+import javax.inject._
 import scala.concurrent.{Future, ExecutionContext}
 import scala.util.{Success, Failure}
 import java.net.ServerSocket
+import play.api.libs.json._
 
+@Singleton
 class PortExposureService @Inject()(implicit ec: ExecutionContext) {
 
   private var serverSockets: Map[Int, ServerSocket] = Map.empty
@@ -52,4 +55,6 @@ class PortExposureService @Inject()(implicit ec: ExecutionContext) {
       Future.failed(new Exception(s"Failed to expose port $port after 3 attempts"))
     }
   }
+
+  def batch(operations: List[JsObject]): Future[Unit] = Future.successful(())
 }

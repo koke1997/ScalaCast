@@ -1,24 +1,18 @@
 package utils
 
-import play.api.mvc.{RequestHeader, Result}
-import scala.concurrent.Future
+import javax.inject._
+import play.api.mvc._
+import scala.concurrent.{Future, ExecutionContext}
+import play.api.mvc.Results._
 
-object CORSUtil {
-  def applyCORS(result: Result): Result = {
+@Singleton
+class CORSUtil @Inject()(implicit ec: ExecutionContext) {
+  
+  def addCORSHeaders(result: Result): Result = {
     result.withHeaders(
       "Access-Control-Allow-Origin" -> "*",
-      "Access-Control-Allow-Methods" -> "GET, POST, PUT, DELETE, OPTIONS",
-      "Access-Control-Allow-Headers" -> "Content-Type, Authorization"
-    )
-  }
-
-  def handlePreflight(request: RequestHeader): Future[Result] = {
-    Future.successful(
-      Results.Ok.withHeaders(
-        "Access-Control-Allow-Origin" -> "*",
-        "Access-Control-Allow-Methods" -> "GET, POST, PUT, DELETE, OPTIONS",
-        "Access-Control-Allow-Headers" -> "Content-Type, Authorization"
-      )
+      "Access-Control-Allow-Methods" -> "GET, POST, OPTIONS, PUT, DELETE",
+      "Access-Control-Allow-Headers" -> "Accept, Content-Type, Origin"
     )
   }
 }

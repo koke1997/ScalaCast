@@ -6,6 +6,7 @@ import services.WebhookService
 import scala.concurrent.{ExecutionContext, Future}
 import play.api.libs.json.Json
 
+
 @Singleton
 class WebhookController @Inject()(cc: ControllerComponents, webhookService: WebhookService)(implicit ec: ExecutionContext) extends AbstractController(cc) {
 
