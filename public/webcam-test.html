@@ -70,11 +70,22 @@
         // WebSocket connection
         function connectWebSocket() {
             try {
+                showStatus('Connecting to WebSocket...');
                 // Use window.location.host to get correct host:port
-                socket = new WebSocket(`ws://${window.location.host}/ws/video-stream`);
+                socket = new WebSocket(`${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}/ws/video-stream`);
+                
+                // Add connection timeout
+                const connectionTimeout = setTimeout(() => {
+                    if (socket.readyState !== WebSocket.OPEN) {
+                        showError('WebSocket connection timed out');
+                        socket = null;
+                    }
+                }, 5000);
                 
                 socket.onopen = () => {
-                    showStatus('WebSocket connected');
+                    clearTimeout(connectionTimeout);
+                    showStatus('WebSocket connected!');
+                    console.log('WebSocket connection established');
                     connectButton.disabled = false;
                 };
                 
@@ -104,7 +115,7 @@
                     connectButton.disabled = true;
                 };
             } catch (error) {
-                showError(`Error connecting to WebSocket: ${error.message}`);
+                showError(`WebSocket connection error: ${error.message}`);
             }
         }
         
@@ -155,6 +166,15 @@
                 
                 // Connect WebSocket
                 connectWebSocket();
+                
+                // Add this after the connectWebSocket function call in startCamera()
+                setTimeout(() => {
+                    if (!socket || socket.readyState !== WebSocket.OPEN) {
+                        showStatus(`WebSocket state: ${socket ? socket.readyState : 'undefined'}`);
+                    } else {
+                        showStatus('WebSocket connection confirmed open');
+                    }
+                }, 2000);
                 
             } catch (error) {
                 showError(`Error starting camera: ${error.message}`);
@@ -266,6 +286,12 @@
         async function connect() {
             if (!localStream) {
                 showError('Please start your camera first');
+                return;
+            }
+            
+            // Add this check
+            if (!socket || socket.readyState !== WebSocket.OPEN) {
+                showError(`Cannot connect: WebSocket not open (state: ${socket ? socket.readyState : 'undefined'})`);
                 return;
             }
             

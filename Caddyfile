@@ -1,4 +1,19 @@
-192.168.0.153:443 {
-  reverse_proxy 127.0.0.1:9001
+192.168.0.244:443 {
+  # Configure WebSocket support
+  @websockets {
+    header Connection *Upgrade*
+    header Upgrade websocket
+  }
+  
+  # Handle WebSocket connections
+  handle @websockets {
+    reverse_proxy 127.0.0.1:9001
+  }
+  
+  # Handle regular requests
+  handle {
+    reverse_proxy 127.0.0.1:9001
+  }
+  
   tls internal
 }
